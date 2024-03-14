@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "imam-chat"
+version = "0.1.0"
+description = ""
+authors = ["Ivan Slepovichev <gurgutan@yandex.ru>"]
+readme = "README.md"
+packages = [
+    { include = "app" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+uvicorn = "^0.23.2"
+langserve = {extras = ["server"], version = ">=0.0.30"}
+pydantic = "<2"
+rag-local = {path = "packages/rag-local", develop = true}
+logger = "^1.4"
+deepmerge = "^1.1.1"
+jq = "^1.6.0"
+
+
+[tool.poetry.group.dev.dependencies]
+langchain-cli = ">=0.0.15"
+pytest = "^8.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

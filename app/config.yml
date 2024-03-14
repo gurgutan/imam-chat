@@ -1,0 +1,46 @@
+embedder: 
+  provider: GPT4AllEmbeddings
+  # model_name: 
+  
+  # provider: HuggingFaceEmbeddings
+  # model_name: sentence-transformers/all-mpnet-base-v2
+
+loader:
+  provider: WebBaseLoader
+  uri: https://ummah.su/info/terminy-islama
+
+  # provider: JsonLoader
+  # uri: data/quran_dict.json
+  # jq_schema: .data[].tafsir_ru
+
+  # provider: TextLoader
+  # uri: data/quran.txt
+  # encoding: utf-8
+
+prompt_template: |
+  "Answer the question based only on the following context:
+  {context}
+
+  Question: {question}
+  "
+
+llm: 
+  model_name: models/saiga-mistral-q4_K.gguf
+  temperature: 0.1
+  max_tokens: 4096
+  top_p: 1.0
+  n_ctx: 8192
+
+server:
+  host: 0.0.0.0
+  port: 8000
+  auth: false
+
+vectordb:
+  # search_type: similarity_score_threshold 
+  provider: chroma
+  path: ./db
+  k: 3
+  anonymized_telemetry: false
+
+    # score_threshold: 0.1
