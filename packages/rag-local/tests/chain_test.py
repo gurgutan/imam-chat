@@ -7,7 +7,7 @@ from rag_local.loaders import (
 )
 from langchain_community.document_loaders import WebBaseLoader, TextLoader, JSONLoader
 
-from rag_local.chain import build_loader
+from rag_local.chain import build_loader, raise_not_implemented
 
 
 def test_build_loader():
@@ -33,6 +33,14 @@ def test_build_loader():
     }
     loader = build_loader(config=config)
     assert isinstance(loader, TextLoader)
+
+    # Должно быть возвращена функция raise_not_implemented
+    config = {
+        "provider": "AnyOtherProvider",
+        "uri": "any_uri",
+    }
+    loader = build_loader(config=config)
+    assert isinstance(loader, raise_not_implemented)
 
 
 # uri: data/quran.txt

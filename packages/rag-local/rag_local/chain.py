@@ -30,53 +30,14 @@ from rag_local.loaders import (
 
 from rag_local.retrievers import ChromaRetreiverComponent
 
-# Закомментирован baseline
-# loader = WebBaseLoaderComponent().build("https://lilianweng.github.io/posts/2023-06-23-agent/")
-# data = loader.load()
-
-# Split
-
-# text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
-# all_splits = text_splitter.split_documents(data)
-
-# # Add to vectorDB
-# vectorstore = Chroma.from_documents(
-#     documents=all_splits,
-#     collection_name="rag-private",
-#     embedding=GPT4AllEmbeddingsComponent(),
-# )
-# retriever = vectorstore.as_retriever()
-
-# template = """Answer the question based only on the following context:
-# {context}
-
-# Question: {question}
-# """
-# prompt = ChatPromptTemplate.from_template(template)
-
-# Callbacks support token-wise streaming
-# callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-
-# LLM
-# Select the LLM that you downloaded
-# ollama_llm = "llama2:7b-chat"
-# model = ChatOllama(model=ollama_llm)
-
-# RAG chain
-# chain = (
-#     RunnableParallel({"context": retriever, "question": RunnablePassthrough()})
-#     | prompt
-#     | model
-#     | StrOutputParser()
-# )
-
 
 # Add typing for input
 class Question(BaseModel):
     __root__: str
 
 
-# chain = chain.with_types(input_type=Question)
+def raise_not_implemented(**kwargs):
+    raise NotImplementedError(f"Not implemented config: {kwargs}")
 
 
 def build_loader(config: Dict):
@@ -93,7 +54,7 @@ def build_loader(config: Dict):
         loader
 
     Raises:
-        Exception: NotImplementedError if
+        Exception: NotImplementedError if unknown provider
     """
 
     providers = {
@@ -101,9 +62,9 @@ def build_loader(config: Dict):
         "JsonLoader": JSONLoaderComponent().build,
         "TextLoader": TextLoaderComponent().build,
     }
-    loader = providers.get(config["provider"], "JsonLoader")(**config)
+    loader = providers.get(config["provider"], raise_not_implemented)(**config)
 
-    loader_provider = config["provider"]
+    # loader_provider = config["provider"]
     # if (loader_provider == "WebBaseLoader"):
     #     loader = WebBaseLoaderComponent().build(loader_uri)
     # elif (loader_provider == "TextLoader"):
