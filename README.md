@@ -43,5 +43,5 @@ docker build . -t imam-chat
 ### Running the Image Locally
 
 ```shell
-docker run -e -p 8080:8080 imam-chat
+docker run -e -p 8080:8010 imam-chat
 ```

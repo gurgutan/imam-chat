@@ -64,16 +64,6 @@ def build_loader(config: Dict):
     }
     loader = providers.get(config["provider"], raise_not_implemented)(**config)
 
-    # loader_provider = config["provider"]
-    # if (loader_provider == "WebBaseLoader"):
-    #     loader = WebBaseLoaderComponent().build(loader_uri)
-    # elif (loader_provider == "TextLoader"):
-    #     loader = TextLoaderComponent().build(loader_uri)
-    # elif (loader_provider == "JsonLoader"):
-    #     jq_schema = config.get("json_schema", ".data[].tafsir_ru")
-    #     loader = JSONLoaderComponent().build(loader_uri, jq_schema)
-    # else:
-    #     raise NotImplementedError(f"Not implemented loader config: {config}")
     return loader
 
 
@@ -84,7 +74,7 @@ def build_chain(config: Dict):
     # Выбираем загрузчик данных
     loader = build_loader(config["loader"])
 
-    logger.info(f"Всего получено {len(chunks)} документов")
+    logger.debug(f"Испольуется загрузчик {loader.__class__.__name__}")
 
     # Загружаем данные из источника
     data = loader.load()

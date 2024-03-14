@@ -1,5 +1,6 @@
 FROM python:3.11-slim
 
+RUN apt-get update && apt-get install build-essential -y
 RUN pip install poetry==1.6.1
 
 RUN poetry config virtualenvs.create false
@@ -10,12 +11,12 @@ COPY ./pyproject.toml ./README.md ./poetry.lock* ./
 
 COPY ./package[s] ./packages
 
-RUN poetry install  --no-interaction --no-ansi --no-root
+RUN poetry install --no-interaction --no-ansi --no-root
 
 COPY ./app ./app
 
 RUN poetry install --no-interaction --no-ansi
 
-EXPOSE 8080
+EXPOSE 8010
 
-CMD exec uvicorn app.server:app --host 0.0.0.0 --port 8080
+CMD exec uvicorn app.server:app --host 0.0.0.0 --port 8010

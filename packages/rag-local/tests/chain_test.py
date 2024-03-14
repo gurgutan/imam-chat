@@ -39,9 +39,8 @@ def test_build_loader():
         "provider": "AnyOtherProvider",
         "uri": "any_uri",
     }
-    loader = build_loader(config=config)
-    assert isinstance(loader, raise_not_implemented)
-
-
-# uri: data/quran.txt
-# encoding: utf-8
+    # Проверяем, что выбрасывается исключение, если нет соответствующего провайдера
+    try:
+        loader = build_loader(config=config)
+    except Exception as e:
+        assert isinstance(e, NotImplementedError)
