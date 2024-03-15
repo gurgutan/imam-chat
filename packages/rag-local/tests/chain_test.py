@@ -1,17 +1,18 @@
 import pytest
 
-# from rag_local.loaders import (
-#     WebBaseLoaderComponent,
-#     JSONLoaderComponent,
-#     TextLoaderComponent,
-# )
-
-# from rag_local.llms import VLLMComponent, CTransformersComponent, LlamaCppComponent
-
+from langchain.docstore.document import Document
 from langchain_community.document_loaders import WebBaseLoader, TextLoader, JSONLoader
 from langchain_community.llms import VLLM, CTransformers, LlamaCpp
+from langchain_community.embeddings import GPT4AllEmbeddings, HuggingFaceEmbeddings
 
-from rag_local.chain import build_loader, build_model, raise_not_implemented
+from rag_local.chain import (
+    build_embedder,
+    build_loader,
+    build_model,
+    build_retriever,
+    raise_not_implemented,
+)
+from rag_local.embeddings import GPT4AllEmbeddingsComponent
 
 
 def test_build_loader():
@@ -38,13 +39,13 @@ def test_build_loader():
     loader = build_loader(config=config)
     assert isinstance(loader, TextLoader)
 
-    # Должно быть возвращена функция raise_not_implemented
+    # Проверяем, что выбрасывается исключение, если нет соответствующего провайдера
     config = {
-        "provider": "AnyOtherProvider",
+        "provider": "SomeNotImplementedProvider",
         "uri": "any_uri",
     }
-    # Проверяем, что выбрасывается исключение, если нет соответствующего провайдера
     try:
+        # Должно быть возвращена функция raise_not_implemented
         loader = build_loader(config=config)
     except Exception as e:
         assert isinstance(e, NotImplementedError)
@@ -62,7 +63,6 @@ def test_build_model():
         "top_p": 1.0,
         "n_ctx": 8192,
     }
-
     llm = build_model(config=config)
     assert isinstance(llm, LlamaCpp)
 
@@ -77,8 +77,75 @@ def test_build_model():
         "n_ctx": 8192,
         "hf": True,
     }
-
     llm = build_model(config=config)
     assert isinstance(llm, CTransformers)
 
-    # TODO: test for vllm
+    # Проверяем, что выбрасывается исключение, если нет соответствующего провайдера
+    config = {"provider": "SomeNotImplementedProvider"}
+    try:
+        llm = build_model(config=config)
+    except Exception as e:
+        assert isinstance(e, NotImplementedError)
+
+    # TODO: add test for vllm
+
+
+def test_build_embedder():
+    # provider: GPT4AllEmbeddings
+    # model_name:
+    config = {
+        "provider": "gpt4allembeddings",
+        "model_name": "",
+    }
+    embedder = build_embedder(config=config)
+    assert isinstance(embedder, GPT4AllEmbeddings)
+
+    config = {
+        "provider": "huggingfaceembeddings",
+        "model_name": "sentence-transformers/all-mpnet-base-v2",
+    }
+    embedder = build_embedder(config=config)
+    assert isinstance(embedder, HuggingFaceEmbeddings)
+
+    config = {"provider": "SomeNotImplementedProvider"}
+    try:
+        # Должно быть возвращена функция raise_not_implemented
+        embedder = build_embedder(config=config)
+    except Exception as e:
+        assert isinstance(e, NotImplementedError)
+
+
+def test_build_retriever():
+    config = {
+        "provider": "chroma",
+        "search_kwargs": {"k": 3},
+        "anonymized_telemetry": False,
+        "path": "./db",
+    }
+    texts = [
+        "First document",
+        "Second document",
+        "Third document",
+        "Fourth document",
+    ]
+    documents = [Document(page_content=text) for text in texts]
+    embedder = build_embedder({"provider": "gpt4allembeddings", "model_name": ""})
+    retreiver = build_retriever(documents=documents, embedder=embedder, config=config)
+    assert retreiver
+
+    config = {
+        "provider": "SomeNotImplementedProvider",
+    }
+    try:
+        # Должно быть возвращена функция raise_not_implemented
+        retreiver = build_retriever(
+            documents=documents, embedder=embedder, config=config
+        )
+    except Exception as e:
+        assert isinstance(e, NotImplementedError)
+
+
+#   path: ./db
+#   search_kwargs:
+#     k: 3
+#   anonymized_telemetry: false

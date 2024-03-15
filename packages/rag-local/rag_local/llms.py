@@ -1,8 +1,9 @@
 from typing import Any, Optional
 from langchain_community.llms import VLLM, CTransformers, LlamaCpp
+from langchain_openai import OpenAI
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-import os.path
+import os
 
 
 DEFAULT_HF_MODEL = "IlyaGusev/saiga_mistral_7b_gguf"
@@ -52,11 +53,13 @@ class CTransformersComponent:
         top_k: int = 4,
         top_p: float = 0.95,
         temperature: float = 0.1,
+        n_ctx: int = 4096,
         **kwargs,
     ) -> Any:
         callbacks = [StreamingStdOutCallbackHandler()]
         full_name = "./models/" + model + "/" + model_file
         model_file = full_name if os.path.isfile(full_name) else None
+        context_length = n_ctx
         llm = CTransformers(
             model=model,
             model_file=model_file,
@@ -65,6 +68,7 @@ class CTransformersComponent:
             top_k=top_k,
             top_p=top_p,
             temperature=temperature,
+            context_length=context_length,
             hf=True,
             callbacks=callbacks,
         )
@@ -100,5 +104,36 @@ class LlamaCppComponent:
             temperature=temperature,
             n_ctx=n_ctx,
             verbose=True,  # Verbose is required to pass to the callback manager
+        )
+        return llm
+
+
+class OpenAIComponent:
+    display_name = "OpenAIChatComponent"
+    description = "OpenAI Chat model"
+    documentation = """OpenAI Chat models.
+
+    To use, you should have the ``openai`` python package installed.
+    See https://python.langchain.com/docs/integrations/llms/openai"""
+
+    def build(
+        self,
+        model: str = "gpt-3.5-turbo",
+        max_tokens: int = 256,
+        top_k: int = 4,
+        top_p: float = 0.95,
+        temperature: float = 0.1,
+        base_url: Optional[str] = None,
+        api_key: Optional[str] = None,
+        **kwargs,
+    ) -> Any:
+        callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+        llm = OpenAI(
+            model=model,
+            max_tokens=max_tokens,
+            top_p=top_p,
+            temperature=temperature,
+            verbose=True,
+            callbacks=callback_manager,
         )
         return llm

@@ -1,8 +1,5 @@
 # Load
 # import os
-# from langchain_community.chat_models import ChatOllama
-# from langchain_community.embeddings import GPT4AllEmbeddings
-# from langchain_community.document_loaders import WebBaseLoader
 from pprint import pprint
 from typing import Dict
 from logger import logger
@@ -14,10 +11,6 @@ from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from rag_local.llms import LlamaCppComponent, CTransformersComponent, VLLMComponent
-
-# from langchain_community.llms import LlamaCpp
-# from langchain.callbacks.manager import CallbackManager
-# from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 from rag_local.embeddings import (
     GPT4AllEmbeddingsComponent,
@@ -92,13 +85,42 @@ def build_model(config: Dict):
     return model
 
 
+def build_embedder(config: Dict):
+    """Build the embedder based on the config dict
+
+    Args:
+        config (Dict): dictionary with the following keys:
+            provider (str): GPT4AllEmbeddings | HuggingFaceEmbeddings
+            model_name (str) : path to gpt4all model or huggingface embedder name
+    """
+
+    providers = {
+        "gpt4allembeddings": GPT4AllEmbeddingsComponent().build,
+        "huggingfaceembeddings": HuggingFaceEmbeddingsComponent().build,
+    }
+    embedder = providers.get(config["provider"].lower(), raise_not_implemented)(
+        **config
+    )
+    return embedder
+
+
+def build_retriever(documents, embedder, config: Dict):
+    """Build the retriever based on the config dict"""
+    providers = {
+        "chroma": ChromaRetreiverComponent().build,
+    }
+    retriever = providers.get(config["provider"].lower(), raise_not_implemented)(
+        documents=documents, embedder=embedder, **config
+    )
+    return retriever
+
+
 def build_chain(config: Dict):
     """
     Build rag chain from config parameters
     """
     # Выбираем загрузчик данных
     loader = build_loader(config["loader"])
-
     logger.debug(f"Испольуется загрузчик {loader.__class__.__name__}")
 
     # Загружаем данные из источника
@@ -107,30 +129,26 @@ def build_chain(config: Dict):
     # Применяем сплиттер
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
     chunks = text_splitter.split_documents(data)
-
     logger.info(f"Всего получено {len(chunks)} документов")
 
     # Выбираем эмбеддер
-    embedder_config = config.get("embedder", "GPT4AllEmbeddings")
-    embedder_provider = embedder_config["provider"]
-    if embedder_provider == "GPT4AllEmbeddings":
-        embedder = GPT4AllEmbeddingsComponent().build()
-    elif embedder_provider == "HuggingFaceEmbeddings":
-        embedder = HuggingFaceEmbeddingsComponent().build(embedder_config["model_name"])
-    else:
-        raise Exception(f"Not implemented embedder {embedder_config}")
+    embedder = build_embedder(config["embedder"])
+    logger.debug(f"Испольуется эмбеддер {embedder.__class__.__name__}")
 
     # Добавляем vectorstore retriever
-    vectordb_config = config.get("vectordb")
-    vectordb_provider = vectordb_config.get("provider", "chroma")
-    if vectordb_provider == "chroma":
-        retriever = ChromaRetreiverComponent().build(
-            documents=chunks,
-            embedder=embedder,
-            search_kwargs={"k": vectordb_config.get("k", 1)},
-        )
-    else:
-        raise Exception(f"Not implemented retriever {vectordb_config}")
+    retriever = build_retriever(chunks, embedder, config["vectordb"])
+    logger.debug(f"Испольуется retriever {retriever.__class__.__name__}")
+
+    # vectordb_config = config.get("vectordb")
+    # vectordb_provider = vectordb_config.get("provider", "chroma")
+    # if vectordb_provider == "chroma":
+    #     retriever = ChromaRetreiverComponent().build(
+    #         documents=chunks,
+    #         embedder=embedder,
+    #         search_kwargs={"k": vectordb_config.get("k", 1)},
+    #     )
+    # else:
+    #     raise Exception(f"Not implemented retriever {vectordb_config}")
 
     # Prompt
     template = config.get(
@@ -143,24 +161,8 @@ def build_chain(config: Dict):
     model = build_model(config["llm"])
 
     logger.debug(f"Испольуется модель {model.__class__.__name__}")
-    # # Callbacks для поддержки стриминга
-    # callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-    # model_name = llm_config.get("model_name", "models/saiga-mistral-q4_K.gguf")
-    # temperature = llm_config.get("temperature", 0.1)
-    # max_tokens = llm_config.get("max_tokens", 512)
-    # top_p = llm_config.get("top_p", 0.9)
-    # n_ctx = llm_config.get("n_ctx", 4096)
-    # model = LlamaCpp(
-    #     model_path=model_name,
-    #     temperature=temperature,
-    #     max_tokens=max_tokens,
-    #     top_p=top_p,
-    #     callback_manager=callback_manager,
-    #     n_ctx=n_ctx,
-    #     verbose=True,  # Verbose is required to pass to the callback manager
-    # )
 
-    # RAG chain
+    # Создаем RAG chain
     chain = (
         RunnableParallel({"context": retriever, "question": RunnablePassthrough()})
         | prompt
@@ -172,8 +174,7 @@ def build_chain(config: Dict):
 
 
 # TODO: Добавить контроль длины промпта
-# TODO: Добавить тесты
-# TODO: Сделать модуль ретриверов rag_local/retrievers.py
+# TODO: Добавить модуль splitters.py
+# TODO: Добавить модуль prompts.py
 # TODO: Добавить в цепь ConversationBufferMemory
 # TODO: Добавить в ответ данные по источникам (метаданные)
-# TODO: Добавить llms.py

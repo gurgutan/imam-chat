@@ -20,11 +20,8 @@ add_routes(app, rag_chain, path="/chat")
 
 if __name__ == "__main__":
     import uvicorn
-    server_config = config.get(
-        "server",
-        {"host": "0.0.0.0", "port": "8000"}
-    )
+
+    server_config = config.get("server", {"host": "0.0.0.0", "port": "8010"})
     uvicorn.run(app, host=server_config["host"], port=server_config["port"])
 
-# TODO: Добавить параметры сервера из config.yml
 # TODO: добавить дефолтный конфиг, который мержиться с текущим
