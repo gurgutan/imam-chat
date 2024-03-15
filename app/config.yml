@@ -24,12 +24,18 @@ prompt_template: |
   Question: {question}
   "
 
-llm: 
-  model_name: models/saiga-mistral-q4_K.gguf
+llm:
+  # provider: llamacpp
+  # model: models/saiga-mistral-7b
+  provider: ctransformers
+  model: IlyaGusev/saiga_mistral_7b_gguf
+  model_file: saiga-mistral-q4_K.gguf
   temperature: 0.1
   max_tokens: 4096
+  top_k: 1
   top_p: 1.0
   n_ctx: 8192
+
 
 server:
   host: 0.0.0.0

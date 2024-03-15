@@ -17,6 +17,7 @@ rag-local = {path = "packages/rag-local", develop = true}
 logger = "^1.4"
 deepmerge = "^1.1.1"
 jq = "^1.6.0"
+ctransformers = "^0.2.27"
 
 
 [tool.poetry.group.dev.dependencies]

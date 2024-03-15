@@ -13,9 +13,11 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.llms import LlamaCpp
-from langchain.callbacks.manager import CallbackManager
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+from rag_local.llms import LlamaCppComponent, CTransformersComponent, VLLMComponent
+
+# from langchain_community.llms import LlamaCpp
+# from langchain.callbacks.manager import CallbackManager
+# from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 from rag_local.embeddings import (
     GPT4AllEmbeddingsComponent,
@@ -37,6 +39,7 @@ class Question(BaseModel):
 
 
 def raise_not_implemented(**kwargs):
+    """Raise NotImplementedError with kwargs as message."""
     raise NotImplementedError(f"Not implemented config: {kwargs}")
 
 
@@ -58,13 +61,35 @@ def build_loader(config: Dict):
     """
 
     providers = {
-        "WebBaseLoader": WebBaseLoaderComponent().build,
-        "JsonLoader": JSONLoaderComponent().build,
-        "TextLoader": TextLoaderComponent().build,
+        "webbaseloader": WebBaseLoaderComponent().build,
+        "jsonloader": JSONLoaderComponent().build,
+        "textloader": TextLoaderComponent().build,
     }
-    loader = providers.get(config["provider"], raise_not_implemented)(**config)
-
+    loader = providers.get(config["provider"].lower(), raise_not_implemented)(**config)
     return loader
+
+
+def build_model(config: Dict):
+    """Build the model based on the config dict
+
+    Args:
+        config (Dict): dictionary with the following keys:
+            provider (str): LlamaCpp | CTransformers | VLLM
+            model_name (str) : path to the model or name of the model in huggingface hub
+
+    Returns:
+        model
+
+    Raises:
+        Exception: NotImplementedError if unknown provider
+    """
+    providers = {
+        "llamacpp": LlamaCppComponent().build,
+        "ctransformers": CTransformersComponent().build,
+        "vllm": VLLMComponent().build,
+    }
+    model = providers.get(config["provider"].lower(), raise_not_implemented)(**config)
+    return model
 
 
 def build_chain(config: Dict):
@@ -106,12 +131,6 @@ def build_chain(config: Dict):
         )
     else:
         raise Exception(f"Not implemented retriever {vectordb_config}")
-    # if (vectordb_provider == "chroma"):
-    #     retriever = Chroma.from_documents(
-    #         documents=chunks,
-    #         collection_name="rag-local",
-    #         embedding=embedder
-    #     ).as_retriever(search_kwargs={"k": vectordb_config.get("k", 1)})
 
     # Prompt
     template = config.get(
@@ -120,25 +139,26 @@ def build_chain(config: Dict):
     )
     prompt = ChatPromptTemplate.from_template(template)
 
-    # Callbacks для поддержки стриминга
-    callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+    # Готовим модель
+    model = build_model(config["llm"])
 
-    # Готовим локальную модель
-    llm_config = config["llm"]
-    model_name = llm_config.get("model_name", "models/saiga-mistral-q4_K.gguf")
-    temperature = llm_config.get("temperature", 0.1)
-    max_tokens = llm_config.get("max_tokens", 512)
-    top_p = llm_config.get("top_p", 0.9)
-    n_ctx = llm_config.get("n_ctx", 4096)
-    model = LlamaCpp(
-        model_path=model_name,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        top_p=top_p,
-        callback_manager=callback_manager,
-        n_ctx=n_ctx,
-        verbose=True,  # Verbose is required to pass to the callback manager
-    )
+    logger.debug(f"Испольуется модель {model.__class__.__name__}")
+    # # Callbacks для поддержки стриминга
+    # callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+    # model_name = llm_config.get("model_name", "models/saiga-mistral-q4_K.gguf")
+    # temperature = llm_config.get("temperature", 0.1)
+    # max_tokens = llm_config.get("max_tokens", 512)
+    # top_p = llm_config.get("top_p", 0.9)
+    # n_ctx = llm_config.get("n_ctx", 4096)
+    # model = LlamaCpp(
+    #     model_path=model_name,
+    #     temperature=temperature,
+    #     max_tokens=max_tokens,
+    #     top_p=top_p,
+    #     callback_manager=callback_manager,
+    #     n_ctx=n_ctx,
+    #     verbose=True,  # Verbose is required to pass to the callback manager
+    # )
 
     # RAG chain
     chain = (
