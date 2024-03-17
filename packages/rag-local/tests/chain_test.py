@@ -88,6 +88,7 @@ def test_build_model():
         assert isinstance(e, NotImplementedError)
 
     # TODO: add test for vllm
+    # TODO: add test for OpenAI
 
 
 def test_build_embedder():
@@ -143,9 +144,3 @@ def test_build_retriever():
         )
     except Exception as e:
         assert isinstance(e, NotImplementedError)
-
-
-#   path: ./db
-#   search_kwargs:
-#     k: 3
-#   anonymized_telemetry: false

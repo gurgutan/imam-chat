@@ -1,15 +1,26 @@
 
 # rag-local
 
-This template performs RAG with no reliance on external APIs. 
+!!!Not ready yet.
 
-It utilizes LlamaCpp | CTransformers  the LLM, GPT4All | HuggingFaceEmbeddings for embeddings, and Chroma for the vectorstore.
+This performs RAG with no reliance on externallocal APIs. 
 
-The vectorstore is created in `chain.py` and by default indexes a [popular blog posts on Agents](https://lilianweng.github.io/posts/2023-06-23-agent/) for question-answering. 
+Settings and API provider can be set in app/config.yml
+
+It utilizes LlamaCpp | CTransformers the LLM, GPT4All | HuggingFaceEmbeddings for embeddings, and Chroma for the vectorstore.
+
+The vectorstore is created in `chain.py` and by default indexes a [popular islam termis site](https://ummah.su/info/terminy-islama/) for question-answering.
+Other type of data sources can be set in app/config.yml
 
 ## Environment Setup
 
 To set up the environment, you need to install LlamaCpp | CTransformers. 
+
+To use CTransformers, you should have the ``ctransformers`` python package installed.
+See https://python.langchain.com/docs/integrations/llms/ctransformers
+
+To use LlamaCPP, you should have the ``llama-cpp-python`` python package installed.
+See https://python.langchain.com/docs/integrations/llms/llamacpp"
 
 This package also uses [GPT4All](https://python.langchain.com/docs/integrations/text_embedding/gpt4all) embeddings. 
 
@@ -37,7 +48,7 @@ And add the following code to your `server.py` file:
 ```python
 from rag_local import build_chain as build_rag_chain
 
-add_routes(app, build_rag_chain, path="/rag-local-chat")
+add_routes(app, build_rag_chain, path="/chat")
 ```
 
 (Optional) Let's now configure LangSmith. LangSmith will help us trace, monitor and debug LangChain applications. LangSmith is currently in private beta, you can sign up [here](https://smith.langchain.com/). If you don't have access, you can skip this section
@@ -51,21 +62,21 @@ export LANGCHAIN_PROJECT=<your-project>  # if not specified, defaults to "defaul
 If you are inside this directory, then you can spin up a LangServe instance directly by:
 
 ```shell
-langchain serve
+langchain serve --port 8010
 ```
 
 This will start the FastAPI app with a server is running locally at 
 [http://localhost:8010](http://localhost:8010)
 
 We can see all templates at [http://127.0.0.1:8010/docs](http://127.0.0.1:8010/docs)
-We can access the playground at [http://127.0.0.1:8000/rag-local-chat/playground](http://127.0.0.1:8000/rag-local-chat/playground)  
+We can access the playground at [http://127.0.0.1:8010/chat/playground](http://127.0.0.1:8010/chat/playground)  
 
 We can access the template from code with:
 
 ```python
 from langserve.client import RemoteRunnable
 
-runnable = RemoteRunnable("http://localhost:8000/rag-local-chat")
+runnable = RemoteRunnable("http://localhost:8010/chat")
 ```
 
 

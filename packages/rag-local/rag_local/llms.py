@@ -4,11 +4,14 @@ from langchain_openai import OpenAI
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 import os
+import os.path
+
+from pydantic import SecretStr
 
 
-DEFAULT_HF_MODEL = "IlyaGusev/saiga_mistral_7b_gguf"
+DEFAULT_HF_MODEL = "IlyaGusev/saiga_mistral_7b_gguf"  # TheBloke/saiga_mistral_7b-GGUF
 DEFAULT_HF_MODEL_FILE = "saiga_mistral_7b.Q4_0.gguf"
-# TheBloke/saiga_mistral_7b-GGUF
+DEFAULT_BASE_URL = "http://127.0.0.1:11434"  # ollama local host
 
 
 class VLLMComponent:
@@ -57,8 +60,8 @@ class CTransformersComponent:
         **kwargs,
     ) -> Any:
         callbacks = [StreamingStdOutCallbackHandler()]
-        full_name = "./models/" + model + "/" + model_file
-        model_file = full_name if os.path.isfile(full_name) else None
+        full_name = os.path.join(model, model_file)
+        model_file = full_name if os.path.isfile(full_name) else ""
         context_length = n_ctx
         llm = CTransformers(
             model=model,
@@ -109,7 +112,7 @@ class LlamaCppComponent:
 
 
 class OpenAIComponent:
-    display_name = "OpenAIChatComponent"
+    display_name = "OpenAIComponent"
     description = "OpenAI Chat model"
     documentation = """OpenAI Chat models.
 
@@ -120,16 +123,17 @@ class OpenAIComponent:
         self,
         model: str = "gpt-3.5-turbo",
         max_tokens: int = 256,
-        top_k: int = 4,
         top_p: float = 0.95,
         temperature: float = 0.1,
         base_url: Optional[str] = None,
-        api_key: Optional[str] = None,
+        api_key: Optional[SecretStr | None] = None,
         **kwargs,
     ) -> Any:
         callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
         llm = OpenAI(
             model=model,
+            base_url=base_url,
+            api_key=api_key,
             max_tokens=max_tokens,
             top_p=top_p,
             temperature=temperature,

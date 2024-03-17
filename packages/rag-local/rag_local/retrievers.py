@@ -1,5 +1,6 @@
 from typing import Any, List, Optional
 from chromadb import Documents
+from langchain_core.documents import Document
 from langchain_community.vectorstores import VectorStore, Chroma
 from chromadb.config import Settings
 
@@ -12,7 +13,7 @@ class ChromaRetreiverComponent:
     def build(
         self,
         embedder: Any,
-        documents: Optional[List[Documents]] = None,
+        documents: Optional[List[Document]] = None,
         search_kwargs: Optional[dict] = None,
         **kwargs
     ) -> VectorStore:
@@ -26,4 +27,4 @@ class ChromaRetreiverComponent:
             ).as_retriever(search_kwargs=search_kwargs)
         # TODO: from_db
         else:
-            raise "Not implemented persistent vectorstore"
+            raise NotImplementedError("Not implemented persistent vectorstore")

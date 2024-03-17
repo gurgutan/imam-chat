@@ -24,7 +24,7 @@ pip install -U langchain-cli
 ## Launch LangServe
 
 ```bash
-langchain serve
+langchain serve --port 8010
 ```
 
 ## Running in Docker
@@ -43,5 +43,5 @@ docker build . -t imam-chat
 ### Running the Image Locally
 
 ```shell
-docker run -e -p 8080:8010 imam-chat
+docker run -e -p 8010:8010 imam-chat
 ```

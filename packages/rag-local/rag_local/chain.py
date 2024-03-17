@@ -25,6 +25,11 @@ from rag_local.loaders import (
 
 from rag_local.retrievers import ChromaRetreiverComponent
 
+from rag_local.prompts import (
+    QuestionAnswerPrompt,
+    QuestionAnswerCoTPrompt,
+)
+
 
 # Add typing for input
 class Question(BaseModel):
@@ -120,51 +125,45 @@ def build_chain(config: Dict):
     Build rag chain from config parameters
     """
     # Выбираем загрузчик данных
+    logger.debug(f"Инициализация загрузчика...")
     loader = build_loader(config["loader"])
-    logger.debug(f"Испольуется загрузчик {loader.__class__.__name__}")
+    logger.debug(f"Используется загрузчик {loader.__class__.__name__}")
 
     # Загружаем данные из источника
     data = loader.load()
 
     # Применяем сплиттер
+    logger.debug(f"Применение сплиттера к документам...")
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
     chunks = text_splitter.split_documents(data)
-    logger.info(f"Всего получено {len(chunks)} документов")
+    logger.debug(f"Всего получено {len(chunks)} документов")
 
     # Выбираем эмбеддер
+    logger.debug(f"Инициализация эмбеддера...")
     embedder = build_embedder(config["embedder"])
-    logger.debug(f"Испольуется эмбеддер {embedder.__class__.__name__}")
+    logger.debug(f"Используется эмбеддер {embedder.__class__.__name__}")
 
     # Добавляем vectorstore retriever
+    logger.debug(f"Инициализация векторной БД...")
     retriever = build_retriever(chunks, embedder, config["vectordb"])
-    logger.debug(f"Испольуется retriever {retriever.__class__.__name__}")
-
-    # vectordb_config = config.get("vectordb")
-    # vectordb_provider = vectordb_config.get("provider", "chroma")
-    # if vectordb_provider == "chroma":
-    #     retriever = ChromaRetreiverComponent().build(
-    #         documents=chunks,
-    #         embedder=embedder,
-    #         search_kwargs={"k": vectordb_config.get("k", 1)},
-    #     )
-    # else:
-    #     raise Exception(f"Not implemented retriever {vectordb_config}")
+    logger.debug(f"Используется retriever {retriever.__class__.__name__}")
 
     # Prompt
-    template = config.get(
-        "prompt_template",
-        "Answer the question based only on the following context:\n{context}\nQuestion: {question}",
-    )
-    prompt = ChatPromptTemplate.from_template(template)
+    # template = config.get(
+    #     "prompt_template",
+    #     "Answer the question based only on the following context:\n{context}\nQuestion: {question}",
+    # )
+    # prompt = ChatPromptTemplate.from_template(template)
+    prompt = QuestionAnswerCoTPrompt().build()
 
     # Готовим модель
+    logger.debug(f"Инициализация модели ...")
     model = build_model(config["llm"])
-
     logger.debug(f"Испольуется модель {model.__class__.__name__}")
 
     # Создаем RAG chain
     chain = (
-        RunnableParallel({"context": retriever, "question": RunnablePassthrough()})
+        RunnableParallel({"context": retriever, "question": RunnablePassthrough()})  # type: ignore
         | prompt
         | model
         | StrOutputParser()
@@ -174,7 +173,6 @@ def build_chain(config: Dict):
 
 
 # TODO: Добавить контроль длины промпта
-# TODO: Добавить модуль splitters.py
-# TODO: Добавить модуль prompts.py
+# TODO: Добавить модуль splitters.py и раздел splitter в config.yml
 # TODO: Добавить в цепь ConversationBufferMemory
 # TODO: Добавить в ответ данные по источникам (метаданные)

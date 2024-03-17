@@ -14,7 +14,7 @@ class HuggingFaceEmbeddingsComponent:
         encode_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
         model_name: str = "sentence-transformers/all-mpnet-base-v2",
-        multi_process: bool = False,
+        multi_process: bool = True,
         **kwargs
     ) -> HuggingFaceEmbeddings:
         return HuggingFaceEmbeddings(
@@ -31,10 +31,5 @@ class GPT4AllEmbeddingsComponent:
     description = "GPT4AllEmbeddings embedding models."
     documentation = "https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.gpt4all.GPT4AllEmbeddings.html"
 
-    def build(
-        self,
-        model_name: Optional[str] = None,
-        n_threads: Optional[int] = None,
-        **kwargs
-    ) -> GPT4AllEmbeddings:
-        return GPT4AllEmbeddings(model_name=model_name, n_threads=n_threads)
+    def build(self, **kwargs) -> GPT4AllEmbeddings:
+        return GPT4AllEmbeddings()  # type: ignore
