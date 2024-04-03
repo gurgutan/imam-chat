@@ -1,7 +1,7 @@
 # imam-chat
 
 API for chatbot using LangChain local or open source components. 
-Based on LangServe components, see https://python.langchain.com/docs/langserve.
+Based on LangServe, see https://python.langchain.com/docs/langserve.
 
 API endpoints:
   - **http://localhost:8010/docs**  - generated OpenAPI docs
@@ -52,6 +52,8 @@ To build the image, you simply:
 ```shell
 docker build . -t imam-chat
 ```
+
+When building the image, llms files from folder /models/ copied. See dockerfile comments.
 
 
 ### Running the Image Locally
