@@ -1,7 +1,11 @@
 # imam-chat
 
 API for chatbot using LangChain local or open source components. 
+Based on LangServe components, see https://python.langchain.com/docs/langserve.
 
+API endpoints:
+  - **http://localhost:8010/docs**  - generated OpenAPI docs
+  - **http://localhost:8010/chat**  - main dialog endpoint
 
 ## Installation
 Install poetry if you haven't yet
@@ -29,7 +33,7 @@ Example of path to file: /imam-chat/models/saiga-mistral-7b/saiga-mistral-q4_K.g
 You can choose model that will be use in config.yml/llm section
 
 ## Settings
-All editable settings in app/config.yml. See comments in file.
+All editable settings in app/config.yml. See comments in config.yml.
 
 ## Launch LangServe
 
