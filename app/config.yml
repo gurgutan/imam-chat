@@ -29,7 +29,7 @@ vectordb:
   provider: chroma
   path: ./db
   search_kwargs:
-    k: 3
+    k: 1
   anonymized_telemetry: false
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1
@@ -44,20 +44,23 @@ prompt_template: |
 # LLM settings. Implemented providers [15.03.24]: llamacpp, ctransformers
 llm:
   # Implemented providers: llamacpp, ctransformers
-  provider: llamacpp
-  # Параметр model соответствует пути к файл модели
-  model: models/saiga-mistral-7b
-  # Параметр model_file соответствует имени файла. Т.о. полный путь к модели будет model/model_file
-  model_file: saiga-mistral-q4_K.gguf
-
-  # provider: ctransformers
-  # model: IlyaGusev/saiga_mistral_7b_gguf
+  # provider: llamacpp
+  # Parameter 'model' is path to model directory
+  # model: models/saiga-mistral-7b
+  # 'model_file' is file name, so full path to model file is 'model/model_file'
   # model_file: saiga-mistral-q4_K.gguf
+
+  # if model name has format Author/model_name, it will try download model hosted on the Hugging Face Hub
+  provider: ctransformers
+  model: TheBloke/Llama-2-7B-Chat-GGUF
+  model_file: llama-2-7b-chat.Q4_0.gguf
   temperature: 0.1
-  max_tokens: 4096
-  top_k: 2
+  max_tokens: 2048
+  top_k: 1
   top_p: 0.95
-  n_ctx: 8192
+  n_ctx: 4096
+  model_type: llama
+  threads: 6
   # openai_base_url: http://localhost:8004/v1
   # openai_api_key: not_needed
 
@@ -67,5 +70,3 @@ server:
   host: 127.0.0.1
   port: 8010
   auth: false
-
-

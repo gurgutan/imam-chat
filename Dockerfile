@@ -25,7 +25,7 @@ COPY ./data ./data
 # Пример:
 # /imam-chat/models/saiga-mistral-7b/saiga-mistral-q4_K.gguf
 # Копирование модели (нужно отключить на проде)
-COPY ./models ./models
+# COPY ./models ./models
 
 
 # Для сборки llama-cpp-python под cuBLAS раскомментировать следующую строку

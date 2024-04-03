@@ -9,7 +9,7 @@ import os.path
 from pydantic import SecretStr
 
 
-DEFAULT_HF_MODEL = "IlyaGusev/saiga_mistral_7b_gguf"  # TheBloke/saiga_mistral_7b-GGUF
+DEFAULT_HF_MODEL = "IlyaGusev/saiga_mistral_7b_gguf"
 DEFAULT_HF_MODEL_FILE = "saiga_mistral_7b.Q4_0.gguf"
 DEFAULT_BASE_URL = "http://127.0.0.1:11434"  # ollama local host
 
@@ -17,13 +17,13 @@ DEFAULT_BASE_URL = "http://127.0.0.1:11434"  # ollama local host
 class VLLMComponent:
     display_name = "VLLMComponent"
     description = "vLLM model"
-    documentation = """To use, you should have the ``vLLM`` python package installed
+    documentation = """You should have the ``vLLM`` python package installed
     https://python.langchain.com/docs/integrations/llms/vllm"""
 
     def build(
         self,
         model: str,
-        max_tokens: int = 256,
+        max_tokens: int = 2048,
         top_k: int = 4,
         top_p: float = 0.95,
         temperature: float = 0.1,
@@ -52,17 +52,17 @@ class CTransformersComponent:
         self,
         model: str,
         model_file: str,
-        max_tokens: int = 256,
+        max_tokens: int = 2048,
         top_k: int = 4,
         top_p: float = 0.95,
         temperature: float = 0.1,
         n_ctx: int = 4096,
+        threads: int = 4,
         **kwargs,
     ) -> Any:
         callbacks = [StreamingStdOutCallbackHandler()]
         full_name = os.path.join(model, model_file)
-        model_file = full_name if os.path.isfile(full_name) else ""
-        context_length = n_ctx
+        model_file = full_name if os.path.isfile(full_name) else model_file
         llm = CTransformers(
             model=model,
             model_file=model_file,
@@ -71,8 +71,9 @@ class CTransformersComponent:
             top_k=top_k,
             top_p=top_p,
             temperature=temperature,
-            context_length=context_length,
+            context_length=n_ctx,
             hf=True,
+            threads=threads,
             callbacks=callbacks,
         )
         return llm
@@ -90,7 +91,7 @@ class LlamaCppComponent:
         self,
         model: str,
         model_file: str = "",
-        max_tokens: int = 256,
+        max_tokens: int = 2048,
         top_k: int = 4,
         top_p: float = 0.95,
         temperature: float = 0.1,
@@ -106,7 +107,7 @@ class LlamaCppComponent:
             top_p=top_p,
             temperature=temperature,
             n_ctx=n_ctx,
-            verbose=True,  # Verbose is required to pass to the callback manager
+            verbose=True,  # required to pass to the callback manager
         )
         return llm
 
@@ -122,7 +123,7 @@ class OpenAIComponent:
     def build(
         self,
         model: str = "gpt-3.5-turbo",
-        max_tokens: int = 256,
+        max_tokens: int = 2048,
         top_p: float = 0.95,
         temperature: float = 0.1,
         base_url: Optional[str] = None,
