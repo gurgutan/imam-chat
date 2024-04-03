@@ -7,6 +7,7 @@ from app.config import get_config
 app = FastAPI()
 
 config = get_config()
+
 rag_chain = build_rag_chain(config)
 
 

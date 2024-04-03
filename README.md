@@ -1,6 +1,7 @@
 # imam-chat
 
-API for chatbot using LangChain local or open source components
+API for chatbot using LangChain local or open source components. 
+
 
 ## Installation
 Install poetry if you haven't yet
@@ -20,6 +21,15 @@ Install the LangChain CLI if you haven't yet
 ```bash
 pip install -U langchain-cli
 ```
+
+## Load models
+Load LLM to folder '/models/'. Supported models in gguf format.
+For example, https://huggingface.co/TheBloke/Mistral-7B-OpenOrca-GGUF.
+Example of path to file: /imam-chat/models/saiga-mistral-7b/saiga-mistral-q4_K.gguf
+You can choose model that will be use in config.yml/llm section
+
+## Settings
+All editable settings in app/config.yml. See comments in file.
 
 ## Launch LangServe
 

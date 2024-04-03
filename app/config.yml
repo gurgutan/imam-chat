@@ -23,7 +23,7 @@ embedder:
   # provider: HuggingFaceEmbeddings
   # model_name: sentence-transformers/all-mpnet-base-v2
 
-# Vector database settings.
+# Vector database settings
 # Implemented providers [15.03.24]: chromadb
 vectordb:
   provider: chroma
@@ -62,7 +62,7 @@ llm:
   # openai_api_key: not_needed
 
 
-# Server settings.
+# Server settings
 server:
   host: 127.0.0.1
   port: 8010
