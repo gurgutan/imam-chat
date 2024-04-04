@@ -96,6 +96,7 @@ class LlamaCppComponent:
         top_p: float = 0.95,
         temperature: float = 0.1,
         n_ctx: int = 4096,
+        threads: int = 4,
         **kwargs,
     ) -> Any:
         callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
@@ -107,6 +108,7 @@ class LlamaCppComponent:
             top_p=top_p,
             temperature=temperature,
             n_ctx=n_ctx,
+            n_threads=threads,
             verbose=True,  # required to pass to the callback manager
         )
         return llm

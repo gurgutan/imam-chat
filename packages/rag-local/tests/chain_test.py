@@ -80,6 +80,19 @@ def test_build_model():
     llm = build_model(config=config)
     assert isinstance(llm, CTransformers)
 
+    config = {
+        "provider": "openai",
+        "model": "TheBloke/Mistral-7B-Instruct-v0.2-GGUF/mistral-7b-instruct-v0.2.Q6_K.gguf",
+        "base_url": "http://localhost:8001/v1",  # https://api.openai.com/v1
+        "api_key": "not_needed",  # <openai_key>
+        "temperature": 0.1,
+        "max_tokens": 4096,
+        "top_k": 1,
+        "n_ctx": 8192,
+    }
+    llm = build_model(config=config)
+    assert isinstance(llm, CTransformers)
+
     # Проверяем, что выбрасывается исключение, если нет соответствующего провайдера
     config = {"provider": "SomeNotImplementedProvider"}
     try:

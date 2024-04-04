@@ -1,16 +1,23 @@
 # Load
 # import os
-from pprint import pprint
+# from pprint import pprint
 from typing import Dict
 from logger import logger
 
-from langchain_community.vectorstores import Chroma
+# from langchain_community.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
+
+# from langchain_core.prompts import ChatPromptTemplate
+# pylint: disable=no-name-in-module
 from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from rag_local.llms import LlamaCppComponent, CTransformersComponent, VLLMComponent
+from rag_local.llms import (
+    LlamaCppComponent,
+    CTransformersComponent,
+    VLLMComponent,
+    OpenAIComponent,
+)
 
 from rag_local.embeddings import (
     GPT4AllEmbeddingsComponent,
@@ -85,6 +92,7 @@ def build_model(config: Dict):
         "llamacpp": LlamaCppComponent().build,
         "ctransformers": CTransformersComponent().build,
         "vllm": VLLMComponent().build,
+        "openai": OpenAIComponent().build,
     }
     model = providers.get(config["provider"].lower(), raise_not_implemented)(**config)
     return model
@@ -125,7 +133,7 @@ def build_chain(config: Dict):
     Build rag chain from config parameters
     """
     # Выбираем загрузчик данных
-    logger.debug(f"Инициализация загрузчика...")
+    logger.debug(f"Инициализация загрузчика {config['loader']}")
     loader = build_loader(config["loader"])
     logger.debug(f"Используется загрузчик {loader.__class__.__name__}")
 
@@ -149,12 +157,9 @@ def build_chain(config: Dict):
     logger.debug(f"Используется retriever {retriever.__class__.__name__}")
 
     # Prompt
-    # template = config.get(
-    #     "prompt_template",
-    #     "Answer the question based only on the following context:\n{context}\nQuestion: {question}",
-    # )
     # prompt = ChatPromptTemplate.from_template(template)
-    prompt = QuestionAnswerCoTPrompt().build()
+    # prompt = QuestionAnswerCoTPrompt().build()
+    prompt = QuestionAnswerPrompt().build()
 
     # Готовим модель
     logger.debug(f"Инициализация модели ...")
