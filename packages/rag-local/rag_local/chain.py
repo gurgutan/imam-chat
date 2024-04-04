@@ -1,4 +1,3 @@
-# Load
 # import os
 # from pprint import pprint
 from typing import Dict
@@ -9,6 +8,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 # from langchain_core.prompts import ChatPromptTemplate
 # pylint: disable=no-name-in-module
+# pylint: disable=unused-import
 from langchain_core.pydantic_v1 import BaseModel
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -25,6 +25,7 @@ from rag_local.embeddings import (
 )
 
 from rag_local.loaders import (
+    RecursiveUrlLoaderComponent,
     WebBaseLoaderComponent,
     JSONLoaderComponent,
     TextLoaderComponent,
@@ -53,7 +54,7 @@ def build_loader(config: Dict):
 
     Args:
         config (Dict): dictionary with the following keys:
-            provider (str): WebBaseLoader | JsonLoader | TextLoader
+            provider (str): WebBaseLoader | JsonLoader | TextLoader | RecursiveUrlLoader
             uri (str) : uri of the document to load
             jq_schema (str) : jq schema [https://python.langchain.com/docs/modules/data_connection/document_loaders/json]
             encoding (str): utf-8 | ascii
@@ -69,6 +70,7 @@ def build_loader(config: Dict):
         "webbaseloader": WebBaseLoaderComponent().build,
         "jsonloader": JSONLoaderComponent().build,
         "textloader": TextLoaderComponent().build,
+        "recursiveloader": RecursiveUrlLoaderComponent().build,
     }
     loader = providers.get(config["provider"].lower(), raise_not_implemented)(**config)
     return loader

@@ -4,7 +4,7 @@
 # Implemented providers [15.03.24]: WebBaseLoader, JsonLoader, TextLoader
 loader:
   provider: WebBaseLoader
-  uri: https://docs.haqq.network/learn/ # https://ummah.su/info/terminy-islama
+  uri:  https://docs.haqq.network/learn/glossary/
 
   # provider: JsonLoader
   # uri: data/quran_dict.json

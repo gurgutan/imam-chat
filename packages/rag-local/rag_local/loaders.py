@@ -1,9 +1,7 @@
 from typing import Sequence, Union
+from bs4 import BeautifulSoup as Soup
 from langchain_community.document_loaders import WebBaseLoader, TextLoader, JSONLoader
-
-
-# loader = WebBaseLoader("https://lilianweng.github.io/posts/2023-06-23-agent/")
-# data = loader.load()
+from langchain_community.document_loaders.recursive_url_loader import RecursiveUrlLoader
 
 
 class WebBaseLoaderComponent:
@@ -13,6 +11,17 @@ class WebBaseLoaderComponent:
 
     def build(self, uri: Union[str, Sequence[str]] = "", **kwargs) -> WebBaseLoader:
         return WebBaseLoader(uri)
+
+
+class RecursiveUrlLoaderComponent:
+    display_name = "RecursiveUrlLoaderComponent"
+    description = "Recursive URL Loader Component"
+    documentation = ""
+
+    def build(self, uri: str, max_depth: int = 2, **kwargs) -> RecursiveUrlLoader:
+        return RecursiveUrlLoader(
+            url=uri, max_depth=max_depth, extractor=lambda x: Soup(x, "html.parser")  # type: ignore
+        )
 
 
 class TextLoaderComponent:
