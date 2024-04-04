@@ -29,7 +29,7 @@ vectordb:
   provider: chroma
   path: ./db
   search_kwargs:
-    k: 2
+    k: 1
   anonymized_telemetry: false
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1
@@ -39,7 +39,8 @@ prompt_template: |
   {context}
 
   Question: {question}
-  "
+
+  Answer:"
 
 # LLM settings. Implemented providers [15.03.24]: llamacpp, ctransformers
 llm:
@@ -51,14 +52,14 @@ llm:
   # model_file: saiga-mistral-q4_K.gguf
 
   # if model name has format Author/model_name, it will try download model hosted on the Hugging Face Hub
-  # provider: ctransformers
-  # model: TheBloke/Llama-2-7B-Chat-GGUF
-  # model_file: llama-2-7b-chat.Q4_0.gguf
+  provider: ctransformers
+  model: TheBloke/Llama-2-7B-Chat-GGUF
+  model_file: llama-2-7b-chat.Q4_0.gguf
 
-  provider: openai
-  model: TheBloke/Mistral-7B-Instruct-v0.2-GGUF/mistral-7b-instruct-v0.2.Q6_K.gguf # gpt-3.5-turbo-0125
-  base_url: http://localhost:8001/v1 # https://api.openai.com/v1
-  api_key: not_needed
+  # provider: openai
+  # model: TheBloke/Mistral-7B-Instruct-v0.2-GGUF/mistral-7b-instruct-v0.2.Q6_K.gguf # gpt-3.5-turbo-0125
+  # base_url: http://localhost:8001/v1 # https://api.openai.com/v1
+  # api_key: not_needed
 
   temperature: 0.1
   max_tokens: 2048

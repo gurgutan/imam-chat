@@ -1,10 +1,13 @@
+# pylint: disable=no-name-in-module
+# pylint: disable=unused-import
+import os
+import os.path
+
 from typing import Any, Optional
 from langchain_community.llms import VLLM, CTransformers, LlamaCpp
 from langchain_openai import OpenAI
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-import os
-import os.path
 
 from pydantic import SecretStr
 
@@ -63,17 +66,20 @@ class CTransformersComponent:
         callbacks = [StreamingStdOutCallbackHandler()]
         full_name = os.path.join(model, model_file)
         model_file = full_name if os.path.isfile(full_name) else model_file
+        config = {
+            "top_k": top_k,
+            "top_p": top_p,
+            "temperature": temperature,
+            "context_length": n_ctx,
+            "threads": threads,
+            "max_new_tokens": max_tokens,
+        }
         llm = CTransformers(
             model=model,
             model_file=model_file,
             trust_remote_code=True,  # mandatory for hf models
-            max_new_tokens=max_tokens,
-            top_k=top_k,
-            top_p=top_p,
-            temperature=temperature,
-            context_length=n_ctx,
+            config=config,
             hf=True,
-            threads=threads,
             callbacks=callbacks,
         )
         return llm

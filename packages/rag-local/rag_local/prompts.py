@@ -11,7 +11,8 @@ class QuestionAnswerPrompt:
         {context}
 
         Question: {question}
-        """
+        
+        Answer:"""
 
     def build(self, **kwargs) -> ChatPromptTemplate:
         return ChatPromptTemplate.from_template(self.template)
