@@ -34,7 +34,7 @@ vectordb:
   search_kwargs:
     k: 2
   anonymized_telemetry: false
-  rebuild: true
+  rebuild: false
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1
 
