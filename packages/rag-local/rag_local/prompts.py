@@ -18,6 +18,18 @@ class QuestionAnswerPrompt:
         return ChatPromptTemplate.from_template(self.template)
 
 
+class QAWithHistoryPrompt:
+    display_name = "QAWithHistoryPrompt"
+    description = "Prompt for answer query with come context"
+    documentation = ""
+    template = """Answer the question based only on the following context:
+        {context}
+
+        Question: {question}
+        
+        Answer:"""
+
+
 # Пример промпта с цепочкой рассуждений
 class QuestionAnswerCoTPrompt:
     display_name = "AnswerQueryWithContextPrompt"

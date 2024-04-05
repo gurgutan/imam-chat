@@ -38,6 +38,8 @@ from rag_local.prompts import (
     QuestionAnswerCoTPrompt,
 )
 
+from langchain_core.runnables.history import RunnableWithMessageHistory
+
 
 # Add typing for input
 class Question(BaseModel):
@@ -135,28 +137,27 @@ def build_chain(config: Dict):
     Build rag chain from config parameters
     """
     # Выбираем загрузчик данных
-    logger.debug(f"Инициализация загрузчика {config['loader']}")
     loader = build_loader(config["loader"])
-    logger.debug(f"Используется загрузчик {loader.__class__.__name__}")
+    logger.info("Using loader %s", loader.__class__.__name__)
 
     # Загружаем данные из источника
+    logger.info(f"Loading data with settings: {config['loader']} ...")
     data = loader.load()
 
     # Применяем сплиттер
-    logger.debug(f"Применение сплиттера к документам...")
+    logger.info("Documents splitting...")
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
     chunks = text_splitter.split_documents(data)
-    logger.debug(f"Всего получено {len(chunks)} документов")
+    logger.info("Produced %i chunks", len(chunks))
 
     # Выбираем эмбеддер
-    logger.debug(f"Инициализация эмбеддера...")
     embedder = build_embedder(config["embedder"])
-    logger.debug(f"Используется эмбеддер {embedder.__class__.__name__}")
+    logger.info("Using embedder %s", embedder.__class__.__name__)
 
     # Добавляем vectorstore retriever
-    logger.debug(f"Инициализация векторной БД...")
+    logger.info("Creating data indexes with embedder")
     retriever = build_retriever(chunks, embedder, config["vectordb"])
-    logger.debug(f"Используется retriever {retriever.__class__.__name__}")
+    logger.info("Using retriever %s", retriever.__class__.__name__)
 
     # Prompt
     # prompt = ChatPromptTemplate.from_template(template)
@@ -164,9 +165,9 @@ def build_chain(config: Dict):
     prompt = QuestionAnswerPrompt().build()
 
     # Готовим модель
-    logger.debug(f"Инициализация модели ...")
+    logger.info(f"Initiating LLM: {config['llm']}")
     model = build_model(config["llm"])
-    logger.debug(f"Испольуется модель {model.__class__.__name__}")
+    # logger.info("Используется модель %s", model.__class__.__name__)
 
     # Создаем RAG chain
     chain = (

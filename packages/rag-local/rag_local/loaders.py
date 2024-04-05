@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+# loaders.py
+"""
+Module contains adapters classes for text loaders by different providers.
+"""
+
+# pylint: disable=no-name-in-module
 from typing import Sequence, Union
 from bs4 import BeautifulSoup as Soup
 from langchain_community.document_loaders import WebBaseLoader, TextLoader, JSONLoader

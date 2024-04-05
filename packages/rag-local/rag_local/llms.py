@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+# llms.py
+"""
+Module contains adapter classes for instantiating LLM by different providers.
+"""
+
 # pylint: disable=no-name-in-module
 # pylint: disable=unused-import
 import os
@@ -64,8 +70,8 @@ class CTransformersComponent:
         **kwargs,
     ) -> Any:
         callbacks = [StreamingStdOutCallbackHandler()]
-        full_name = os.path.join(model, model_file)
-        model_file = full_name if os.path.isfile(full_name) else model_file
+        # full_name = os.path.join(model, model_file)
+        # model_file = full_name if os.path.isfile(full_name) else model_file
         config = {
             "top_k": top_k,
             "top_p": top_p,

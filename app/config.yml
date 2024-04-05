@@ -3,12 +3,12 @@
 # Data loader settings.
 # Implemented providers [15.03.24]: WebBaseLoader, JsonLoader, TextLoader
 loader:
-  provider: WebBaseLoader
-  uri:  https://docs.haqq.network/learn/glossary/
+  # provider: WebBaseLoader
+  # uri:  https://docs.haqq.network/learn/glossary/
 
-  # provider: JsonLoader
-  # uri: data/quran_dict.json
-  # jq_schema: .data[].tafsir_ru
+  provider: JsonLoader
+  uri: data/quran_dict.json
+  jq_schema: .data[].tafsir_en
 
   # provider: TextLoader
   # uri: data/quran.txt
@@ -17,11 +17,11 @@ loader:
 # Embeddings settings.
 # Implemented providers [15.03.24]: GPT4AllEmbeddings, HuggingFaceEmbeddings
 embedder: 
-  provider: GPT4AllEmbeddings
+  # provider: GPT4AllEmbeddings
   # model_name: 
   
-  # provider: HuggingFaceEmbeddings
-  # model_name: sentence-transformers/all-mpnet-base-v2
+  provider: HuggingFaceEmbeddings
+  model_name: sentence-transformers/all-mpnet-base-v2
 
 # Vector database settings
 # Implemented providers [15.03.24]: chromadb
@@ -29,7 +29,7 @@ vectordb:
   provider: chroma
   path: ./db
   search_kwargs:
-    k: 1
+    k: 4
   anonymized_telemetry: false
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1

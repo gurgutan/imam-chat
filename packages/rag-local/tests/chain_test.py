@@ -6,6 +6,7 @@ from langchain_community.document_loaders import WebBaseLoader, TextLoader, JSON
 from langchain_community.llms import VLLM, CTransformers, LlamaCpp
 from langchain_community.embeddings import GPT4AllEmbeddings, HuggingFaceEmbeddings
 
+from langchain_openai import OpenAI
 from rag_local.chain import (
     build_embedder,
     build_loader,
@@ -69,7 +70,7 @@ def test_build_model():
 
     config = {
         "provider": "ctransformers",
-        "model": "IlyaGusev/saiga_mistral_7b_gguf",
+        "model": "models/saiga-mistral-7b",
         "model_file": "saiga-mistral-q4_K.gguf",
         "temperature": 0.1,
         "max_tokens": 4096,
@@ -92,7 +93,7 @@ def test_build_model():
         "n_ctx": 8192,
     }
     llm = build_model(config=config)
-    assert isinstance(llm, CTransformers)
+    assert isinstance(llm, OpenAI)
 
     # Проверяем, что выбрасывается исключение, если нет соответствующего провайдера
     config = {"provider": "SomeNotImplementedProvider"}
