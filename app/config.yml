@@ -21,7 +21,10 @@ embedder:
   # model_name: 
   
   provider: HuggingFaceEmbeddings
-  model_name: sentence-transformers/all-mpnet-base-v2
+  model_name: BAAI/bge-small-en-v1.5 #mixedbread-ai/mxbai-embed-large-v1 #sentence-transformers/all-mpnet-base-v2 #
+
+  # provider: NomicEmbeddings
+  # model_name: nomic-ai/nomic-embed-text-v1.5
 
 # Vector database settings
 # Implemented providers [15.03.24]: chromadb
@@ -29,8 +32,9 @@ vectordb:
   provider: chroma
   path: ./db
   search_kwargs:
-    k: 4
+    k: 2
   anonymized_telemetry: false
+  rebuild: true
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1
 
@@ -46,10 +50,10 @@ prompt_template: |
 llm:
   # Implemented providers: llamacpp, ctransformers
   # provider: llamacpp
-  # Parameter 'model' is path to model directory
-  # model: models/saiga-mistral-7b
-  # 'model_file' is file name, so full path to model file is 'model/model_file'
-  # model_file: saiga-mistral-q4_K.gguf
+  # # Parameter 'model' is path to model directory
+  # model: TheBloke/Mistral-7B-Instruct-v0.2-GGUF
+  # # 'model_file' is file name, so full path to model file is 'model/model_file'
+  # model_file: mistral-7b-instruct-v0.2.Q6_K.gguf
 
   # if model name has format Author/model_name, it will try download model hosted on the Hugging Face Hub
   provider: ctransformers
@@ -58,8 +62,8 @@ llm:
 
   # provider: openai
   # model: TheBloke/Mistral-7B-Instruct-v0.2-GGUF/mistral-7b-instruct-v0.2.Q6_K.gguf # gpt-3.5-turbo-0125
-  # base_url: http://localhost:8001/v1 # https://api.openai.com/v1
-  # api_key: not_needed
+  # base_url: https://api.proxyapi.ru/openai/v1 # http://localhost:8001/v1 # https://api.openai.com/v1
+  # api_key: sk-kwrRdqybjppKSpSp60ZBbztAAdqtgpRCs
 
   temperature: 0.1
   max_tokens: 2048

@@ -146,7 +146,7 @@ def build_chain(config: Dict):
 
     # Применяем сплиттер
     logger.info("Documents splitting...")
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=100)
     chunks = text_splitter.split_documents(data)
     logger.info("Produced %i chunks", len(chunks))
 

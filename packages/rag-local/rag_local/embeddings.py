@@ -1,6 +1,7 @@
 from typing import Optional, Dict
 from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
 from langchain_community.embeddings import GPT4AllEmbeddings
+import torch
 
 
 class HuggingFaceEmbeddingsComponent:
@@ -23,6 +24,7 @@ class HuggingFaceEmbeddingsComponent:
             model_kwargs=model_kwargs,
             model_name=model_name,
             multi_process=multi_process,
+            show_progress=True,
         )
 
 
@@ -31,5 +33,6 @@ class GPT4AllEmbeddingsComponent:
     description = "GPT4AllEmbeddings embedding models."
     documentation = "https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.gpt4all.GPT4AllEmbeddings.html"
 
-    def build(self, **kwargs) -> GPT4AllEmbeddings:
-        return GPT4AllEmbeddings()  # type: ignore
+    def build(self, model_name: str = "", **kwargs) -> GPT4AllEmbeddings:
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        return GPT4AllEmbeddings(model_name=model_name, device=device)  # type: ignore
