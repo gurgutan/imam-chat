@@ -61,7 +61,7 @@ See dockerfile comments.
 ### Running the Image Locally
 
 ```shell
-docker run --rm -d -p 8010:8010/tcp imam-chat:latest
+docker run --rm -it -p 8010:8010/tcp -v ./db:/code/db imam-chat:latest 
 ```
 
 

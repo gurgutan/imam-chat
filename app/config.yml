@@ -19,22 +19,22 @@ loader:
 embedder: 
   # provider: GPT4AllEmbeddings
   # model_name: 
+  provider: huggingfacebgeembedding
+  model_name: BAAI/bge-small-en-v1.5
   
-  provider: HuggingFaceEmbeddings
-  model_name: BAAI/bge-small-en-v1.5 #mixedbread-ai/mxbai-embed-large-v1 #sentence-transformers/all-mpnet-base-v2 #
+  # provider: HuggingFaceEmbeddings
+  # model_name: sentence-transformers/all-mpnet-base-v2 #mixedbread-ai/mxbai-embed-large-v1 #
+  model_kwargs:
+    device: cpu
 
-  # provider: NomicEmbeddings
-  # model_name: nomic-ai/nomic-embed-text-v1.5
 
 # Vector database settings
 # Implemented providers [15.03.24]: chromadb
 vectordb:
-  provider: chroma
-  path: ./db
+  provider: faiss
   search_kwargs:
-    k: 2
+    k: 4
   anonymized_telemetry: false
-  rebuild: false
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1
 
@@ -56,14 +56,20 @@ llm:
   # model_file: mistral-7b-instruct-v0.2.Q6_K.gguf
 
   # if model name has format Author/model_name, it will try download model hosted on the Hugging Face Hub
-  provider: ctransformers
-  model: TheBloke/Llama-2-7B-Chat-GGUF
-  model_file: llama-2-7b-chat.Q4_0.gguf
+  # provider: ctransformers
+  # model: TheBloke/Llama-2-7B-Chat-GGUF
+  # model_file: llama-2-7b-chat.Q4_0.gguf
+
+  provider: vllmopenai
+  model: gpt-3.5-turbo 
+  base_url: http://localhost:8001/v1
+  api_key: not_need
 
   # provider: openai
-  # model: TheBloke/Mistral-7B-Instruct-v0.2-GGUF/mistral-7b-instruct-v0.2.Q6_K.gguf # gpt-3.5-turbo-0125
-  # base_url: https://api.proxyapi.ru/openai/v1 # http://localhost:8001/v1 # https://api.openai.com/v1
-  # api_key: sk-kwrRdqybjppKSpSp60ZBbztAAdqtgpRCs
+  # model: gpt-3.5-turbo
+  # base_url: https://api.openai.com/v1
+  # api_key: sk-some_key
+
 
   temperature: 0.1
   max_tokens: 2048

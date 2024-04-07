@@ -5,7 +5,8 @@ import shutil
 from typing import Any, List, Optional
 from chromadb import Documents
 from langchain_core.documents import Document
-from langchain_community.vectorstores import VectorStore, Chroma
+from langchain_community.vectorstores import VectorStore, Chroma, FAISS
+
 from chromadb.config import Settings
 
 from logger import logger
@@ -21,31 +22,16 @@ class ChromaRetreiverComponent:
         embedder: Any,
         documents: Optional[List[Document]] = None,
         search_kwargs: Optional[dict] = None,
-        path: str = "./chroma",
-        rebuild: bool = False,
+        path: str = "./db",
+        collection_name: str = "rag-local",
         **kwargs,
     ) -> VectorStore:
         client_settings = Settings(
-            is_persistent=True, anonymized_telemetry=False, persist_directory=path
+            is_persistent=True, anonymized_telemetry=False  # , persist_directory=path
         )
-        # TODO: Create Document check befor adding db and remove next lines (del of db)
-        collection_name = "rag-local"
-        if os.path.isdir(path) and rebuild:
-            try:
-                shutil.rmtree(path)
-            except OSError as e:
-                logger.error("Error: %s - %s", e.filename, e.strerror)
 
         if not os.path.isdir(path):
-            assert documents, "Error: no documents"
-            logger.info("Vector db not found. Building indexes...")
-            store = Chroma.from_documents(
-                persist_directory=path,
-                documents=documents,
-                collection_name=collection_name,
-                embedding=embedder,
-                client_settings=client_settings,
-            )
+            store = self.create_store(embedder, documents, path, collection_name)
         else:
             store = Chroma(
                 persist_directory=path,
@@ -55,3 +41,62 @@ class ChromaRetreiverComponent:
             )
 
         return store.as_retriever(search_kwargs=search_kwargs)
+
+    def create_store(
+        self,
+        embedder,
+        documents: Optional[List[Document]] = None,
+        path: str = "./db",
+        collection_name: str = "rag-local",
+        **kwargs,
+    ):
+        assert documents, "Error: no documents"
+        client_settings = Settings(
+            is_persistent=True, anonymized_telemetry=False, persist_directory=path
+        )
+        logger.info("Vector db not found. Building indexes...")
+        store = Chroma.from_documents(
+            persist_directory=path,
+            documents=documents,
+            collection_name=collection_name,
+            embedding=embedder,
+            client_settings=client_settings,
+        )
+        return store
+
+
+class FAISSRetreiverComponent:
+    display_name = "FAISSRetreiver"
+    description = "FAISS Retreiver embedding models."
+    documentation = ""
+    index_name = "index"
+
+    def build(
+        self,
+        embedder: Any,
+        documents: Optional[List[Document]] = None,
+        search_kwargs: Optional[dict] = None,
+        path: str = "./db",
+        **kwargs,
+    ) -> VectorStore:
+
+        if not os.path.isfile(path + "//" + self.index_name + ".faiss"):
+            store = self.create_store(embedder, documents, path)
+        else:
+            store = FAISS.load_local(
+                path, embedder, allow_dangerous_deserialization=True
+            )
+        return store.as_retriever(search_kwargs=search_kwargs)
+
+    def create_store(
+        self,
+        embedder,
+        documents: Optional[List[Document]] = None,
+        path: str = "./db",
+        **kwargs,
+    ):
+        assert documents, "Error: no documents"
+        logger.info("Vector db not found. Building indexes...")
+        store = FAISS.from_documents(documents=documents, embedding=embedder)
+        store.save_local(folder_path=path, index_name=self.index_name)
+        return store

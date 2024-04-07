@@ -14,7 +14,7 @@ from langchain_community.llms import VLLM, CTransformers, LlamaCpp
 from langchain_openai import OpenAI
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-
+from langchain_community.llms import VLLMOpenAI
 from pydantic import SecretStr
 
 
@@ -146,6 +146,35 @@ class OpenAIComponent:
     ) -> Any:
         callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
         llm = OpenAI(
+            model=model,
+            base_url=base_url,
+            api_key=api_key,
+            max_tokens=max_tokens,
+            top_p=top_p,
+            temperature=temperature,
+            verbose=True,
+            callbacks=callback_manager,
+        )
+        return llm
+
+
+class VLLMOpenAIComponent:
+    display_name = "VLLMOpenAIComponent"
+    description = "OpenAI mimic chat model"
+    documentation = """OpenAI Server protocol chat models."""
+
+    def build(
+        self,
+        model: str = "gpt-3.5-turbo",
+        max_tokens: int = 2048,
+        top_p: float = 0.95,
+        temperature: float = 0.1,
+        base_url: Optional[str] = None,
+        api_key: Optional[SecretStr | None] = None,
+        **kwargs,
+    ) -> Any:
+        callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
+        llm = VLLMOpenAI(
             model=model,
             base_url=base_url,
             api_key=api_key,

@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  imam-chat:
+    image: imam-chat:latest
+    volumes:
+      - ./db:/code/db

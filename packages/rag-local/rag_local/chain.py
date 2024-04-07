@@ -3,7 +3,6 @@
 from typing import Dict
 from logger import logger
 
-# from langchain_community.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
 
 # from langchain_core.prompts import ChatPromptTemplate
@@ -17,10 +16,12 @@ from rag_local.llms import (
     CTransformersComponent,
     VLLMComponent,
     OpenAIComponent,
+    VLLMOpenAIComponent,
 )
 
 from rag_local.embeddings import (
     GPT4AllEmbeddingsComponent,
+    HuggingFaceBgeEmbeddingsComponent,
     HuggingFaceEmbeddingsComponent,
 )
 
@@ -31,7 +32,7 @@ from rag_local.loaders import (
     TextLoaderComponent,
 )
 
-from rag_local.retrievers import ChromaRetreiverComponent
+from rag_local.retrievers import ChromaRetreiverComponent, FAISSRetreiverComponent
 
 from rag_local.prompts import (
     QuestionAnswerPrompt,
@@ -96,6 +97,7 @@ def build_model(config: Dict):
         "llamacpp": LlamaCppComponent().build,
         "ctransformers": CTransformersComponent().build,
         "vllm": VLLMComponent().build,
+        "vllmopenai": VLLMOpenAIComponent().build,
         "openai": OpenAIComponent().build,
     }
     model = providers.get(config["provider"].lower(), raise_not_implemented)(**config)
@@ -114,6 +116,7 @@ def build_embedder(config: Dict):
     providers = {
         "gpt4allembeddings": GPT4AllEmbeddingsComponent().build,
         "huggingfaceembeddings": HuggingFaceEmbeddingsComponent().build,
+        "huggingfacebgeembedding": HuggingFaceBgeEmbeddingsComponent().build,
     }
     embedder = providers.get(config["provider"].lower(), raise_not_implemented)(
         **config
@@ -125,6 +128,7 @@ def build_retriever(documents, embedder, config: Dict):
     """Build the retriever based on the config dict"""
     providers = {
         "chroma": ChromaRetreiverComponent().build,
+        "faiss": FAISSRetreiverComponent().build,
     }
     retriever = providers.get(config["provider"].lower(), raise_not_implemented)(
         documents=documents, embedder=embedder, **config
