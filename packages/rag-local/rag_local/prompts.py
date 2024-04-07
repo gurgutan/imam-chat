@@ -3,11 +3,13 @@ from langchain_core.prompts import ChatPromptTemplate
 
 
 # Пример промпта с контекстом и вопросом
-class QuestionAnswerPrompt:
+class MuslimImamPrompt:
     display_name = "AnswerQueryWithContextPrompt"
     description = "Prompt for answer query with come context"
     documentation = ""
-    template = """Answer the question based only on the following context:
+    template = """Act as a Muslim imam who gives me guidance and advice on how to deal with life problems. Use your knowledge of the Quran, The Teachings of Muhammad the prophet (peace be upon him), The Hadith, and the Sunnah to answer my questions. Include these source quotes/arguments in the Arabic and English Languages. 
+    Answer the question based only on the following context:
+    
         {context}
 
         Question: {question}
@@ -18,16 +20,20 @@ class QuestionAnswerPrompt:
         return ChatPromptTemplate.from_template(self.template)
 
 
-class QAWithHistoryPrompt:
-    display_name = "QAWithHistoryPrompt"
+class QuestionAnswerPrompt:
+    display_name = "AnswerQueryWithContextPrompt"
     description = "Prompt for answer query with come context"
     documentation = ""
     template = """Answer the question based only on the following context:
+    
         {context}
 
         Question: {question}
         
         Answer:"""
+
+    def build(self, **kwargs) -> ChatPromptTemplate:
+        return ChatPromptTemplate.from_template(self.template)
 
 
 # Пример промпта с цепочкой рассуждений

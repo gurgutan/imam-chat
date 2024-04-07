@@ -35,6 +35,7 @@ from rag_local.loaders import (
 from rag_local.retrievers import ChromaRetreiverComponent, FAISSRetreiverComponent
 
 from rag_local.prompts import (
+    MuslimImamPrompt,
     QuestionAnswerPrompt,
     QuestionAnswerCoTPrompt,
 )
@@ -166,7 +167,7 @@ def build_chain(config: Dict):
     # Prompt
     # prompt = ChatPromptTemplate.from_template(template)
     # prompt = QuestionAnswerCoTPrompt().build()
-    prompt = QuestionAnswerPrompt().build()
+    prompt = MuslimImamPrompt().build()
 
     # Готовим модель
     logger.info(f"Initiating LLM: {config['llm']}")
