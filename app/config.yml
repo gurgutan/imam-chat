@@ -15,7 +15,7 @@ loader:
   # encoding: utf-8
 
 # Embeddings settings.
-# Implemented providers [15.03.24]: GPT4AllEmbeddings, HuggingFaceEmbeddings
+# Implemented providers [07.04.24]: GPT4AllEmbeddings, HuggingFaceEmbeddings, huggingfacebgeembedding
 embedder: 
   # provider: GPT4AllEmbeddings
   # model_name: 
@@ -29,7 +29,7 @@ embedder:
 
 
 # Vector database settings
-# Implemented providers [15.03.24]: chromadb
+# Implemented providers [07.04.24]: chromadb, faiss
 vectordb:
   provider: faiss
   search_kwargs:
@@ -46,7 +46,7 @@ prompt_template: |
 
   Answer:"
 
-# LLM settings. Implemented providers [15.03.24]: llamacpp, ctransformers
+# LLM settings. Implemented providers [07.04.24]: llamacpp, ctransformers, vllmopenai, openai
 llm:
   # Implemented providers: llamacpp, ctransformers
   # provider: llamacpp
