@@ -1,8 +1,13 @@
-# Заготовки для
+# -*- coding: utf-8 -*-
+# llms.py
+"""
+Module contains adapters for prompt templates
+"""
+
 from langchain_core.prompts import ChatPromptTemplate
 
 
-# Пример промпта с контекстом и вопросом
+# Prompt for muslim imam chat
 class MuslimImamPrompt:
     display_name = "AnswerQueryWithContextPrompt"
     description = "Prompt for answer query with come context"
@@ -14,12 +19,13 @@ class MuslimImamPrompt:
 
         Question: {question}
         
-        Answer:"""
+        Answer: """
 
     def build(self, **kwargs) -> ChatPromptTemplate:
         return ChatPromptTemplate.from_template(self.template)
 
 
+# Standart QA with context prompt
 class QuestionAnswerPrompt:
     display_name = "AnswerQueryWithContextPrompt"
     description = "Prompt for answer query with come context"
@@ -30,7 +36,7 @@ class QuestionAnswerPrompt:
 
         Question: {question}
         
-        Answer:"""
+        Answer: """
 
     def build(self, **kwargs) -> ChatPromptTemplate:
         return ChatPromptTemplate.from_template(self.template)
@@ -56,7 +62,8 @@ class QuestionAnswerCoTPrompt:
         {{context}}
 
         Question: {{question}}
-        """
+        
+        Answer: """
 
     def build(self, **kwargs) -> ChatPromptTemplate:
         return ChatPromptTemplate.from_template(self.template)

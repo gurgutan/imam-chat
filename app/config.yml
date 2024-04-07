@@ -1,5 +1,6 @@
 # Config file for imam-chat application
 
+
 # Data loader settings.
 # Implemented providers [15.03.24]: WebBaseLoader, JsonLoader, TextLoader
 loader:
@@ -13,6 +14,7 @@ loader:
   # provider: TextLoader
   # uri: data/quran.txt
   # encoding: utf-8
+
 
 # Embeddings settings.
 # Implemented providers [07.04.24]: GPT4AllEmbeddings, HuggingFaceEmbeddings, huggingfacebgeembedding
@@ -38,6 +40,8 @@ vectordb:
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1
 
+
+# Using of prompt template not implemented yet (07.04.2024)
 prompt_template: |
   "Answer the question based only on the following context:
   {context}
@@ -46,24 +50,25 @@ prompt_template: |
 
   Answer:"
 
+
 # LLM settings. Implemented providers [07.04.24]: llamacpp, ctransformers, vllmopenai, openai
 llm:
   # Implemented providers: llamacpp, ctransformers
-  # provider: llamacpp
-  # # Parameter 'model' is path to model directory
-  # model: TheBloke/Mistral-7B-Instruct-v0.2-GGUF
-  # # 'model_file' is file name, so full path to model file is 'model/model_file'
-  # model_file: mistral-7b-instruct-v0.2.Q6_K.gguf
+  provider: llamacpp
+  # Parameter 'model' is path to model directory
+  model: ./models
+  # 'model_file' is file name, so full path to model file is 'model/model_file'
+  model_file: mistral-7b-instruct-v0.2.Q4_0.gguf
 
   # if model name has format Author/model_name, it will try download model hosted on the Hugging Face Hub
   # provider: ctransformers
   # model: TheBloke/Llama-2-7B-Chat-GGUF
   # model_file: llama-2-7b-chat.Q4_0.gguf
 
-  provider: vllmopenai
-  model: gpt-3.5-turbo 
-  base_url: http://localhost:8001/v1
-  api_key: not_need
+  # provider: vllmopenai
+  # model: gpt-3.5-turbo 
+  # base_url: http://localhost:8001/v1
+  # api_key: not_need
 
   # provider: openai
   # model: gpt-3.5-turbo

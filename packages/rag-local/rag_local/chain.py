@@ -185,7 +185,10 @@ def build_chain(config: Dict):
     return chain.with_types(input_type=Question)
 
 
+# TODO: Добавить логирование диалогов
+# TODO: Добавить подключение папки с моделями (docker run -it -p 8010:8010/tcp -v ./db:/code/db -v ./models:/code/models imam-chat:latest )
 # TODO: Добавить контроль длины промпта
 # TODO: Добавить модуль splitters.py и раздел splitter в config.yml
 # TODO: Добавить в цепь ConversationBufferMemory
-# TODO: Добавить в ответ данные по источникам (метаданные)
+# TODO: Добавить в ответ данные по источникам (метаданные в коллекцию документов и их извелечение)
+# TODO: Поискать модель для арабского языка либо зафайнюнить

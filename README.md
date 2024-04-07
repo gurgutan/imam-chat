@@ -60,8 +60,19 @@ See dockerfile comments.
 
 ### Running the Image Locally
 
+Run the image with folder ./db binded to folder /code/db/ and ./models binded to /code/models/. This folder contains vector stores of documents with indexes.
 ```shell
-docker run --rm -it -p 8010:8010/tcp -v ./db:/code/db imam-chat:latest 
+docker run --rm -it -p 8010:8010/tcp \
+           -v ./db:/code/db \
+           -v ./models:/code/models imam-chat:latest 
+```
+
+### Build & Run Image
+```shell
+docker build . -t imam-chat; \
+docker run --rm -it -p 8010:8010/tcp \
+           -v ./db:/code/db \
+           -v ./models:/code/models imam-chat:latest 
 ```
 
 
@@ -69,15 +80,16 @@ docker run --rm -it -p 8010:8010/tcp -v ./db:/code/db imam-chat:latest
 ```
 What is Five Pillars of Islam?
 ```
-
 ```
 How many surahs are there in the Holy Quran?
 ```
-
+```
+Can i have 6 wifes?
+```
 
 # Issues
 
-## 1. poetry requires python 3.11, but there is only python3.10
+## 1. Poetry requires python 3.11, but there is only python3.10 on your machine
 Install python 3.11
 #### Step 1. Update & upgrade
 ```bash

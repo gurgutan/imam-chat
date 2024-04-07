@@ -1,3 +1,6 @@
+# Temporary pylint disablings while code under heavy changings
+# pylint: disable=no-name-in-module
+# pylint: disable=unused-import
 from typing import Optional, Dict
 from langchain_community.embeddings.huggingface import (
     HuggingFaceEmbeddings,

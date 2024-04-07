@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+# llms.py
+"""
+Module contains adapter classes for vectore store with retriever from different providers.
+"""
+
+# Temporary pylint disablings while code under heavy changings
 # pylint: disable=no-name-in-module
 # pylint: disable=unused-import
 import os.path
@@ -6,7 +13,6 @@ from typing import Any, List, Optional
 from chromadb import Documents
 from langchain_core.documents import Document
 from langchain_community.vectorstores import VectorStore, Chroma, FAISS
-
 from chromadb.config import Settings
 
 from logger import logger
