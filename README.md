@@ -62,17 +62,13 @@ See dockerfile comments.
 
 Run the image with folder ./db binded to folder /code/db/ and ./models binded to /code/models/. This folder contains vector stores of documents with indexes.
 ```shell
-docker run --rm -it -p 8010:8010/tcp \
-           -v ./db:/code/db \
-           -v ./models:/code/models imam-chat:latest 
+docker run --rm -it -p 8010:8010/tcp -v ./db:/code/db -v ./models:/code/models imam-chat:latest 
 ```
 
 ### Build & Run Image
 ```shell
-docker build . -t imam-chat; \
-docker run --rm -it -p 8010:8010/tcp \
-           -v ./db:/code/db \
-           -v ./models:/code/models imam-chat:latest 
+docker build . -t imam-chat && \
+docker run --rm -it -p 8010:8010/tcp -v ./db:/code/db -v ./models:/code/models imam-chat:latest 
 ```
 
 

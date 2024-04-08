@@ -35,7 +35,7 @@ embedder:
 vectordb:
   provider: faiss
   search_kwargs:
-    k: 4
+    k: 2
   anonymized_telemetry: false
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1
