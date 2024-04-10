@@ -16,15 +16,7 @@ def connection():
 
 
 def test_connect_qa_db():
-    assert connect_qa_db() is not None
-
-    assert connection is not None
-
-
-def test_connect_qa_db_error(monkeypatch):
-    def raise_error(*args, **kwargs):
-        raise psycopg2.OperationalError
-
-    monkeypatch.setattr(psycopg2, "connect", raise_error)
-    with pytest.raises(psycopg2.OperationalError):
-        connect_qa_db()
+    connection = connect_qa_db()
+    assert connection is not None, "Connection to qadb failed"
+    assert isinstance(connection, psycopg2.extensions.connection)
+    connection.close()

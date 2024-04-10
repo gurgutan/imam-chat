@@ -68,7 +68,7 @@ class ChainBuilder:
         # Применяем сплиттер
         logger.info("Documents splitting...")
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=400, chunk_overlap=100
+            chunk_size=800, chunk_overlap=100
         )
         chunks = text_splitter.split_documents(data)
         logger.info("Produced %i chunks", len(chunks))
@@ -147,3 +147,10 @@ class ChainBuilder:
         count_all_raws = count(self.connection)
         logger.info("Records count in db: %i", count_all_raws)
         return x
+
+
+# TODO: Добавить логирование диалогов
+# TODO: Добавить контроль длины промпта
+# TODO: Добавить в цепь ConversationBufferMemory
+# TODO: Добавить в ответ данные по источникам (метаданные в коллекцию документов и их извелечение)
+# TODO: Поискать модель для арабского языка либо зафайнюнить

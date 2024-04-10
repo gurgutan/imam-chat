@@ -20,7 +20,7 @@ POSTGRES_HOST = "localhost"
 DB_NAME = "imam"
 
 
-CONNECTION_STRING = f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{DB_NAME}"
+# CONNECTION_STRING = f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{DB_NAME}"
 TABLE_NAME = "query_response"
 
 # Scheme
@@ -50,7 +50,7 @@ def connect_qa_db() -> PSConnection:
         )
     except PostgresError as error:
         logger.error("Unable to connect database: %s", error)
-        return None
+        raise PostgresError(error)
 
     return connection
 

@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from app.config import get_config
-
 from langserve import add_routes
-from rag_local import build_chain
+
+from app.config import get_config
 from rag_local.chain_custom import ChainBuilder
 
 app = FastAPI()
@@ -30,5 +29,3 @@ if __name__ == "__main__":
     server_config = config.get("server", {"host": "0.0.0.0", "port": "8010"})
 
     uvicorn.run(app, host=server_config["host"], port=server_config["port"])
-
-# TODO: добавить дефолтный конфиг, который мержиться с текущим
