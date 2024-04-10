@@ -8,8 +8,9 @@ loader:
   # uri:  https://docs.haqq.network/learn/glossary/
 
   provider: JsonLoader
-  uri: data/quran_dict.json
-  jq_schema: .data[].tafsir_en
+  uri: sources/quran_dict.json
+  jq_schema: .data[]
+  content_key: .tafsir_en
 
   # provider: TextLoader
   # uri: data/quran.txt
@@ -26,19 +27,32 @@ embedder:
   
   # provider: HuggingFaceEmbeddings
   # model_name: sentence-transformers/all-mpnet-base-v2 #mixedbread-ai/mxbai-embed-large-v1 #
+
+  # provider: openaiembeddings
+  # model_name:
+
+
   model_kwargs:
-    device: cpu
+    device: cpu # cuda, cuda:0, cpu
 
 
 # Vector database settings
 # Implemented providers [07.04.24]: chromadb, faiss
 vectordb:
   provider: faiss
+  metric_type: cosine # l2, ip, jaccard
   search_kwargs:
     k: 2
   anonymized_telemetry: false
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1
+
+# Not implemented yet
+# dialogsdb:
+#   user: 
+#   password:
+#   port:
+#   host:
 
 
 # Using of prompt template not implemented yet (07.04.2024)
@@ -82,9 +96,8 @@ llm:
   top_p: 0.95
   n_ctx: 4096
   model_type: llama
-  threads: 14
-
-  
+  threads: 14 # number of CPU threads to use
+ 
 
 # Server settings
 server:

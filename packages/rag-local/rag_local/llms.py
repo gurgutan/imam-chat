@@ -10,18 +10,44 @@ Module contains adapter classes for instantiating LLM by different providers.
 import os
 import os.path
 
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 from langchain_community.llms import VLLM, CTransformers, LlamaCpp
 from langchain_openai import OpenAI
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain_community.llms import VLLMOpenAI
 from pydantic import SecretStr
+from rag_local.component import raise_not_implemented
 
 
 DEFAULT_HF_MODEL = "IlyaGusev/saiga_mistral_7b_gguf"
 DEFAULT_HF_MODEL_FILE = "saiga_mistral_7b.Q4_0.gguf"
 DEFAULT_BASE_URL = "http://127.0.0.1:11434"  # ollama local host
+
+
+def build_model(config: Dict):
+    """Build the model based on the config dict
+
+    Args:
+        config (Dict): dictionary with the following keys:
+            provider (str): LlamaCpp | CTransformers | VLLM
+            model_name (str) : path to the model or name of the model in huggingface hub
+
+    Returns:
+        model
+
+    Raises:
+        Exception: NotImplementedError if unknown provider
+    """
+    providers = {
+        "llamacpp": LlamaCppComponent().build,
+        "ctransformers": CTransformersComponent().build,
+        "vllm": VLLMComponent().build,
+        "vllmopenai": VLLMOpenAIComponent().build,
+        "openai": OpenAIComponent().build,
+    }
+    model = providers.get(config["provider"].lower(), raise_not_implemented)(**config)
+    return model
 
 
 class VLLMComponent:

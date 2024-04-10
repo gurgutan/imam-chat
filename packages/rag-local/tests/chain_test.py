@@ -12,7 +12,6 @@ from rag_local.chain import (
     build_loader,
     build_model,
     build_retriever,
-    raise_not_implemented,
 )
 from rag_local.embeddings import GPT4AllEmbeddingsComponent
 
@@ -41,6 +40,14 @@ def test_build_loader():
     loader = build_loader(config=config)
     assert isinstance(loader, TextLoader)
 
+    # Проверяем QuranJSONLoaderComponent
+    config = {
+        "provider": "quranjsonloader",
+        "uri": "data/quran_dict.json",
+    }
+    loader = build_loader(config=config)
+    assert isinstance(loader, JSONLoader)
+
     # Проверяем, что выбрасывается исключение, если нет соответствующего провайдера
     config = {
         "provider": "SomeNotImplementedProvider",
@@ -55,10 +62,14 @@ def test_build_loader():
 
 def test_build_model():
 
+    # Must be real model path, not just a file name
+    test_model_dir = "./models"
+    test_model_filename = "mistral-7b-instruct-v0.2.Q4_0.gguf"
+
     config = {
         "provider": "llamacpp",
-        "model": "models/saiga-mistral-7b",
-        "model_file": "saiga-mistral-q4_K.gguf",
+        "model": test_model_dir,
+        "model_file": test_model_filename,
         "temperature": 0.1,
         "max_tokens": 4096,
         "top_k": 1,
@@ -70,8 +81,8 @@ def test_build_model():
 
     config = {
         "provider": "ctransformers",
-        "model": "models/saiga-mistral-7b",
-        "model_file": "saiga-mistral-q4_K.gguf",
+        "model": test_model_dir,
+        "model_file": test_model_filename,
         "temperature": 0.1,
         "max_tokens": 4096,
         "top_k": 1,

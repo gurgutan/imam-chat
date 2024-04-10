@@ -11,12 +11,17 @@ WORKDIR /code
 
 COPY ./pyproject.toml ./README.md ./poetry.lock* ./
 
+
 COPY ./package[s] ./packages
 
 COPY ./app ./app
 
 # Documents data
-COPY ./data ./data
+COPY ./sources ./sources
+
+# To build  llama-cpp-python for cuBLAS uncomment next line
+# RUN export CMAKE_ARGS="-DLLAMA_CUBLAS=on"
+RUN poetry install --no-interaction --no-ansi
 
 # For local llm use in llamacpp, llm need to be loaded to local folder:
 # /Path/To/Model/ModelFile.gguf
@@ -25,10 +30,6 @@ COPY ./data ./data
 # Copy models to image folder
 # COPY ./models ./models
 
-
-# To build  llama-cpp-python for cuBLAS uncomment next line
-# RUN export CMAKE_ARGS="-DLLAMA_CUBLAS=on"
-RUN poetry install --no-interaction --no-ansi
 
 EXPOSE 8010
 

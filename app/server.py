@@ -1,14 +1,19 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from langserve import add_routes
-from rag_local import build_chain as build_rag_chain
 from app.config import get_config
+
+from langserve import add_routes
+from rag_local import build_chain
+from rag_local.chain_custom import ChainBuilder
 
 app = FastAPI()
 
 config = get_config()
 
-rag_chain = build_rag_chain(config)
+
+# rag_chain = build_chain(config)
+chain_builder = ChainBuilder()
+rag_chain = chain_builder.build(config)
 
 
 @app.get("/")

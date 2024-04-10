@@ -21,6 +21,7 @@ ctransformers = "^0.2.27"
 langchain-openai = "^0.0.8"
 sentence-transformers = "^2.5.1"
 faiss-cpu = "^1.8.0"
+psycopg2-binary = "^2.9.9"
 
 
 [tool.poetry.group.dev.dependencies]
