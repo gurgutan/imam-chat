@@ -8,6 +8,7 @@ API endpoints:
   - **http://host:8010/chat**  - main dialog endpoint
   - **http://host:8010/chat/playground** - playground for chat-bot
 
+Alsow using conversations logging to database. Credentials
 ## Installation
 Install poetry if you haven't yet (see https://python-poetry.org/docs/#installing-with-the-official-installer)
 
@@ -36,6 +37,9 @@ You can choose model that will be use in config.yml/llm section
 
 ## Settings
 All editable settings in app/config.yml. See comments in config.yml.
+Add .env file in root folder with credentails to connect db:
+POSTGRES_USER = <db_username>
+POSTGRES_PASSWORD = <db_password>
 
 ## Launch LangServe
 
@@ -71,6 +75,10 @@ docker build . -t imam-chat && \
 docker run --rm -it -p 8010:8010/tcp -v ./db:/code/db -v ./models:/code/models imam-chat:latest 
 ```
 
+### Build & Run with docker compose
+```shell
+docker compose down && docker compose up --build
+```
 
 ## Examples or questions
 ```

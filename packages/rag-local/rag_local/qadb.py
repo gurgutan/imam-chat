@@ -13,16 +13,14 @@ from psycopg2.extensions import connection as PSConnection
 
 load_dotenv(find_dotenv())
 
-POSTGRES_USER = os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_PORT = "5432"
-POSTGRES_HOST = "localhost"
-DB_NAME = "imam"
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_PORT = os.getenv("DB_PORT")
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_TABLE_NAME = os.getenv("DB_TABLE_NAME")
 
-
-# CONNECTION_STRING = f"postgresql+psycopg2://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{DB_NAME}"
-TABLE_NAME = "query_response"
-
+# CONNECTION_STRING = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 # Scheme
 # CREATE TABLE public.query_response (
 #     id bigint NOT NULL,
@@ -42,10 +40,10 @@ def connect_qa_db() -> PSConnection:
     """Connect to the PostgreSQL database server."""
     try:
         connection = psycopg2.connect(
-            user=POSTGRES_USER,
-            password=POSTGRES_PASSWORD,
-            host=POSTGRES_HOST,
-            port=POSTGRES_PORT,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT,
             database=DB_NAME,
         )
     except PostgresError as error:
@@ -75,7 +73,7 @@ def insert(connection: PSConnection, data: Dict) -> bool:
 
     # Выполнение SQL-запроса для вставки данных в таблицу
     insert_query = f"""
-        INSERT INTO {TABLE_NAME} (date, question, answer, documents, score, metric_type, llm_type_emb, llm_type_ans, prompt_scheme) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        INSERT INTO {DB_TABLE_NAME} (date, question, answer, documents, score, metric_type, llm_type_emb, llm_type_ans, prompt_scheme) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
         """
     with connection.cursor() as cursor:
         try:
@@ -92,7 +90,7 @@ def select(connection: PSConnection) -> list:
 
     with connection.cursor() as cursor:
         try:
-            select_query = f"""SELECT * FROM {TABLE_NAME}"""
+            select_query = f"""SELECT * FROM {DB_TABLE_NAME}"""
             cursor.execute(select_query)
         except (PostgresError, psycopg2.DatabaseError):
             logger.error("Error while selecting data from the table")
@@ -105,7 +103,7 @@ def count(connection: PSConnection) -> int:
     """Count all rows from the table."""
     with connection.cursor() as cursor:
         try:
-            select_query = f"""SELECT COUNT(*) FROM {TABLE_NAME}"""
+            select_query = f"""SELECT COUNT(*) FROM {DB_TABLE_NAME}"""
             cursor.execute(select_query)
         except (PostgresError, psycopg2.DatabaseError):
             logger.error("Error while selecting data from the table")
