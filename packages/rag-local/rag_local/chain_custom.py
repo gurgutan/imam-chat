@@ -153,7 +153,7 @@ class ChainBuilder:
             [f"{doc['content']} [{str(i+1)}]" for i, doc in enumerate(documents)]
         )
 
-        quoting = "\n\n"
+        quoting = "\n"
         quoting += "\n".join(
             [
                 f"{i+1}. {self._format_quoting(doc['metadata'])}"
@@ -170,6 +170,7 @@ class ChainBuilder:
             metadata.get("author", ""),
             metadata.get("name", ""),
             metadata.get("source", ""),
+            metadata.get("cite", ""),
         ]
         quote = ". ".join([s for s in quote_data if s])
         return quote

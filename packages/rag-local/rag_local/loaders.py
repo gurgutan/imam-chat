@@ -134,6 +134,6 @@ class QuranJSONLoaderComponent:
             "source": source,
             "name": name,
             "author": author,
-            "cite": f"Qu'ran [{surah_n}:{ayah_n}]",
+            "cite": f"Qu'ran ({surah_n}:{ayah_n})",
         }
         return info

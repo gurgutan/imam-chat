@@ -2,7 +2,7 @@
 
 
 # Data loader settings.
-# Implemented providers [15.03.24]: WebBaseLoader, JsonLoader, TextLoader
+# Implemented providers [11.04.24]: WebBaseLoader, JsonLoader, TextLoader, QuranJsonLoader
 loader:
   # provider: WebBaseLoader
   # uri:  https://docs.haqq.network/learn/glossary/
