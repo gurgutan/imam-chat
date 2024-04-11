@@ -169,8 +169,8 @@ class ChainBuilder:
         quote_data = [
             metadata.get("author", ""),
             metadata.get("name", ""),
-            metadata.get("source", ""),
             metadata.get("cite", ""),
+            metadata.get("source", ""),
         ]
         quote = ". ".join([s for s in quote_data if s])
         return quote
