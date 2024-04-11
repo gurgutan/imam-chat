@@ -7,10 +7,13 @@ loader:
   # provider: WebBaseLoader
   # uri:  https://docs.haqq.network/learn/glossary/
 
-  provider: JsonLoader
-  uri: sources/quran_dict.json
-  jq_schema: .data[]
-  content_key: .tafsir_en
+  # provider: JsonLoader
+  # uri: sources/quran_en.json
+  # jq_schema: .data[]
+  # content_key: .tafsir
+
+  provider: QuranJsonLoader
+  uri: sources/quran-en.json
 
   # provider: TextLoader
   # uri: data/quran.txt
@@ -95,7 +98,7 @@ llm:
   top_p: 0.95
   n_ctx: 4096
   model_type: llama
-  threads: 14 # number of CPU threads to use
+  threads: 32 # number of CPU threads to use
  
 
 # Server settings

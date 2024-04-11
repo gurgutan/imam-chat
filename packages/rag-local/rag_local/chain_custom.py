@@ -148,17 +148,31 @@ class ChainBuilder:
                 docs_with_scores["documents"], docs_with_scores["scores"]
             )
         ]
-        context = "\nExtracted fragments:\n"
+        context = "\nFound quotes:\n"
         context += "\n----\n".join(
+            [f"{doc['content']} [{str(i+1)}]" for i, doc in enumerate(documents)]
+        )
+
+        quoting = "\n\n"
+        quoting += "\n".join(
             [
-                f"Fragment {str(i)}:::\n" + doc["content"]
+                f"{i+1}. {self._format_quoting(doc['metadata'])}"
                 for i, doc in enumerate(documents)
             ]
         )
         # Save to buffer
         self.record["documents"] = json.dumps(documents, ensure_ascii=False)
         # self.record["scores"] = json.dumps(docs_with_scores["scores"], ensure_ascii=False)
-        return {"context": context, "question": question}
+        return {"context": context + quoting, "question": question}
+
+    def _format_quoting(self, metadata: dict) -> str:
+        quote_data = [
+            metadata.get("author", ""),
+            metadata.get("name", ""),
+            metadata.get("source", ""),
+        ]
+        quote = ". ".join([s for s in quote_data if s])
+        return quote
 
     def _get_answer(self, x):
         self.record["answer"] = x

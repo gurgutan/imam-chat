@@ -9,8 +9,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 # Prompt for muslim imam chat
 class MuslimImamPrompt:
-    display_name = "AnswerQueryWithContextPrompt"
-    description = "Prompt for answer query with come context"
+    description = "Prompt for answer query with context ин muslim imam"
     documentation = ""
     template = """Act as a Muslim imam who gives me guidance and advice on how to deal with life problems. Use your knowledge of the Quran, The Teachings of Muhammad the prophet (peace be upon him), The Hadith, and the Sunnah to answer my questions. Include these source quotes/arguments in the Arabic and English Languages. 
     Answer the question based only on the following context:
