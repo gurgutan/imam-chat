@@ -44,7 +44,7 @@ vectordb:
   provider: faiss
   metric_type: cosine # l2, ip, jaccard
   search_kwargs:
-    k: 2
+    k: 4
   anonymized_telemetry: false
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1
@@ -93,7 +93,7 @@ llm:
 
 
   temperature: 0.1
-  max_tokens: 512 # maximum number of tokens in generated text
+  max_tokens: 1024 # maximum number of tokens in generated text
   top_k: 1
   top_p: 0.95
   n_ctx: 4096
