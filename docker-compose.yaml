@@ -1,11 +1,9 @@
-
 services:
   db:
     image: postgres
     restart: always
     shm_size: '2gb'
     environment:
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
@@ -19,18 +17,25 @@ services:
     depends_on: 
       - db
     image: imam-chat:latest
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_PORT: 5432
+      DB_HOST: db
+      DB_NAME: imam
+      DB_TABLE_NAME: query_response    
     restart: always
     volumes:
       - type: bind
-        source: ./imam-chat/store
+        source: ~/dev/imam-chat/store
         target: /code/store
       - type: bind
-        source: ./imam-chat/models
+        source: ~/dev/imam-chat/models
         target: /code/models
       - type: bind
-        source: ./imam-chat/sources
+        source: ~/dev/imam-chat/sources
         target: /code/sources
-    build: ./imam-chat/
+    # build: /imam-chat/
     command: uvicorn app.server:app --host 0.0.0.0 --port 8010
     ports:
       - "8010:8010/tcp"

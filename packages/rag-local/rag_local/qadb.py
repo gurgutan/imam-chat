@@ -28,7 +28,7 @@ DB_TABLE_NAME = os.getenv("DB_TABLE_NAME")
 #     question text,
 #     answer text,
 #     documents json,
-#     score real,
+#     scores real,
 #     metric_type text,
 #     llm_type_emb text,
 #     prompt_scheme text,
@@ -62,7 +62,6 @@ def insert(connection: PSConnection, data: Dict) -> bool:
         data["question"],
         data["answer"],
         data["documents"],
-        data["score"],
         data["metric_type"],
         data["llm_type_emb"],
         data["llm_type_ans"],
@@ -73,7 +72,7 @@ def insert(connection: PSConnection, data: Dict) -> bool:
 
     # Выполнение SQL-запроса для вставки данных в таблицу
     insert_query = f"""
-        INSERT INTO {DB_TABLE_NAME} (date, question, answer, documents, score, metric_type, llm_type_emb, llm_type_ans, prompt_scheme) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        INSERT INTO {DB_TABLE_NAME} (date, question, answer, documents, metric_type, llm_type_emb, llm_type_ans, prompt_scheme) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
         """
     with connection.cursor() as cursor:
         try:

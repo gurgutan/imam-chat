@@ -3,7 +3,8 @@
 
 from datetime import datetime
 import json
-from typing import Dict
+from json import encoder
+from typing import Any, Dict
 from logger import logger
 
 # from langchain_core.prompts import ChatPromptTemplate
@@ -18,7 +19,7 @@ from langchain_core.runnables import (
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import chain
 from langchain_core.documents import Document
-from langchain_core.vectorstores import VectorStoreRetriever
+from langchain_core.vectorstores import VectorStore, VectorStoreRetriever
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.language_models.llms import BaseLLM
 
@@ -33,6 +34,8 @@ from rag_local.qadb import connect_qa_db, count, insert, select
 
 from psycopg2.extensions import connection as PSConnection
 
+from rag_local.utils import first, second
+
 
 class Question(BaseModel):
     __root__: str
@@ -40,6 +43,7 @@ class Question(BaseModel):
 
 class ChainBuilder:
     config: Dict
+    store: VectorStore
     retriever: VectorStoreRetriever
     prompt: ChatPromptTemplate
     model: BaseLLM
@@ -79,7 +83,9 @@ class ChainBuilder:
 
         # Добавляем vectorstore retriever
         logger.info("Creating data indexes with embedder")
-        self.retriever = build_retriever(chunks, embedder, config["vectordb"])
+        self.retriever, self.store = build_retriever(
+            chunks, embedder, config["vectordb"]
+        )
         logger.info("Using retriever %s", self.retriever.__class__.__name__)
 
         # Prompt
@@ -93,21 +99,25 @@ class ChainBuilder:
 
         # Создаем RAG chain
         rag_chain = (
-            RunnableLambda(self._init_record)
+            RunnableLambda(self._init_question)  # -> question
             | RunnableParallel(
-                {"context": self.retriever, "question": RunnablePassthrough()}
+                {
+                    "docs_with_scores": RunnableLambda(self._get_docs_with_scores),
+                    "question": RunnablePassthrough(),
+                }
             )
-            | RunnableLambda(self._save_context)
+            | RunnableLambda(self._get_context_with_question)
             | self.prompt
             | self.model
             | StrOutputParser()
-            | RunnableLambda(self._save_answer)
-            | RunnableLambda(self._save_record)
+            | RunnableLambda(self._get_answer)
+            | RunnableLambda(self._finilize_chain)
         )
 
         return rag_chain.with_types(input_type=Question)
 
-    def _init_record(self, question: str):
+    def _init_question(self, question: str):
+        # Recording to buffer
         self.record = {
             "date": datetime.now(),
             "question": question,
@@ -115,38 +125,58 @@ class ChainBuilder:
             "llm_type_emb": self.config["embedder"]["model_name"],
             "llm_type_ans": self.config["llm"]["model_file"],
             "metric_type": self.config["vectordb"]["metric_type"],
-            "score": 0.0,
-            # TODO: scores
         }
-        return question
+        # Here may be formatting or transformin question
+        return question.strip()
 
-    def _save_question(self, x):
-        self.record["question"] = x
-        return x
+    def _get_context_with_question(self, x) -> dict[str, str]:
+        """
+        Get context string from the
+            { "docs_with_scores": docs_with_scores, "question": question }
+        to
+            {"context": context, "question": question}
+        """
+        question = x["question"]
+        docs_with_scores = x["docs_with_scores"]
+        documents = [
+            {
+                "content": doc.page_content,
+                "metadata": doc.metadata,
+                "score": score,
+            }
+            for (doc, score) in zip(
+                docs_with_scores["documents"], docs_with_scores["scores"]
+            )
+        ]
+        context = "\nExtracted fragments:\n"
+        context += "\n----\n".join(
+            [
+                f"Fragment {str(i)}:::\n" + doc["content"]
+                for i, doc in enumerate(documents)
+            ]
+        )
+        # Save to buffer
+        self.record["documents"] = json.dumps(documents, ensure_ascii=False)
+        # self.record["scores"] = json.dumps(docs_with_scores["scores"], ensure_ascii=False)
+        return {"context": context, "question": question}
 
-    def _save_answer(self, x):
+    def _get_answer(self, x):
         self.record["answer"] = x
         return x
 
-    def _save_context(self, x):
-        fragments = [
-            {"content": doc.page_content, "metadata": doc.metadata}
-            for doc in x["context"]
-        ]
-        self.record["documents"] = json.dumps(fragments)
-        return x
-
-    def _save_prompt(self, x):
-        self.record["prompt_scheme"] = self.prompt.pretty_print()
-        return x
-
-    def _save_record(self, x):
+    def _finilize_chain(self, x):
         logger.info(self.record)
         if not insert(self.connection, self.record):
             logger.error("Failed to insert record to db")
         count_all_raws = count(self.connection)
         logger.info("Records count in db: %i", count_all_raws)
         return x
+
+    def _get_docs_with_scores(self, query: str):
+        # retrive collection of type List[Tuple[Document, float]]
+        pairs = self.store.similarity_search_with_score(query)
+        docs, scores = zip(*pairs)
+        return {"documents": docs, "scores": [float(score) for score in scores]}
 
 
 # TODO: Добавить логирование диалогов

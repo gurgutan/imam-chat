@@ -26,26 +26,28 @@ from langchain_community.vectorstores.utils import (
 from chromadb.config import Settings
 
 from logger import logger
+from pydantic import BaseModel
 from rag_local.component import raise_not_implemented
 
 # Путь по умолчанию к векторной БД
 DEFAULT_STORE_PATH = "./store"
 
 
-def build_retriever(documents, embedder, config: Dict) -> VectorStoreRetriever:
+def build_retriever(
+    documents, embedder, config: Dict
+) -> tuple[VectorStoreRetriever, VectorStore]:
     """Build the retriever based on the config dict"""
     providers = {
         "chroma": ChromaRetreiverComponent().build,
         "faiss": FAISSRetreiverComponent().build,
     }
-    retriever = providers.get(config["provider"].lower(), raise_not_implemented)(
+    retriever, store = providers.get(config["provider"].lower(), raise_not_implemented)(
         documents=documents, embedder=embedder, **config
     )
-    return retriever
+    return retriever, store
 
 
 class ChromaRetreiverComponent:
-    display_name = "ChromaRetreiver"
     description = "Chroma Retreiver embedding models."
     documentation = ""
     distance_strategy = DistanceStrategy.COSINE
@@ -59,7 +61,7 @@ class ChromaRetreiverComponent:
         collection_name: str = "rag-local",
         metric_type: str = "cosine",
         **kwargs,
-    ) -> VectorStoreRetriever:
+    ) -> tuple[VectorStoreRetriever, VectorStore]:
         client_settings = Settings(
             is_persistent=True, anonymized_telemetry=False  # , persist_directory=path
         )
@@ -67,7 +69,6 @@ class ChromaRetreiverComponent:
             raise ValueError(
                 f"{metric_type} is not supported. Please use one of ['cosine', 'l2', 'ip']"
             )
-
         metadata = {"hnsw:space": metric_type}
 
         if not os.path.isdir(path):
@@ -83,7 +84,7 @@ class ChromaRetreiverComponent:
                 client_settings=client_settings,
             )
 
-        return store.as_retriever(search_kwargs=search_kwargs)
+        return store.as_retriever(search_kwargs=search_kwargs), store
 
     def create_store(
         self,
@@ -112,9 +113,8 @@ class ChromaRetreiverComponent:
 
 
 class FAISSRetreiverComponent:
-    display_name = "FAISSRetreiver"
     description = "FAISS Retreiver embedding models."
-    documentation = ""
+    documentation = "https://python.langchain.com/docs/integrations/vectorstores/faiss/"
     index_name = "index"
 
     def build(
@@ -125,13 +125,13 @@ class FAISSRetreiverComponent:
         path: str = DEFAULT_STORE_PATH,
         metric_type: str = "cosine",
         **kwargs,
-    ) -> VectorStoreRetriever:
+    ) -> tuple[VectorStoreRetriever, VectorStore]:
 
         if not os.path.isfile(path + "//" + self.index_name + ".faiss"):
             logger.info(f"Vector db not found in {path}. Building indexes...")
             store: FAISS = self.create_store(embedder, documents, path)
         else:
-            store = FAISS.load_local(
+            store: FAISS = FAISS.load_local(
                 path, embedder, allow_dangerous_deserialization=True
             )
         metrics_map = {
@@ -146,7 +146,8 @@ class FAISSRetreiverComponent:
         # Also, we can specify distance strategy
         # DistanceStrategy.MAX_INNER_PRODUCT:
         # DistanceStrategy.EUCLIDEAN_DISTANCE:
-        return store.as_retriever(search_kwargs=search_kwargs)
+
+        return store.as_retriever(search_kwargs=search_kwargs), store
 
     def create_store(
         self,

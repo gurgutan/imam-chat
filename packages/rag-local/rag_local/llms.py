@@ -51,7 +51,6 @@ def build_model(config: Dict):
 
 
 class VLLMComponent:
-    display_name = "VLLMComponent"
     description = "vLLM model"
     documentation = """You should have the ``vLLM`` python package installed
     https://python.langchain.com/docs/integrations/llms/vllm"""
@@ -77,7 +76,6 @@ class VLLMComponent:
 
 
 class CTransformersComponent:
-    display_name = "CTransformersComponent"
     description = "C Transformers LLM model"
     documentation = """C Transformers LLM models.
 
@@ -119,7 +117,6 @@ class CTransformersComponent:
 
 
 class LlamaCppComponent:
-    display_name = "LlamaCppComponent"
     description = "LlamaCpp LLM model"
     documentation = """LlamaCpp LLM models.
 
@@ -154,7 +151,6 @@ class LlamaCppComponent:
 
 
 class OpenAIComponent:
-    display_name = "OpenAIComponent"
     description = "OpenAI Chat model"
     documentation = """OpenAI Chat models.
 
@@ -186,7 +182,6 @@ class OpenAIComponent:
 
 
 class VLLMOpenAIComponent:
-    display_name = "VLLMOpenAIComponent"
     description = "OpenAI mimic chat model"
     documentation = """OpenAI Server protocol chat models."""
 

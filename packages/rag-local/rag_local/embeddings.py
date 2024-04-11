@@ -34,9 +34,10 @@ def build_embedder(config: Dict):
 
 
 class HuggingFaceEmbeddingsComponent:
-    display_name = "HuggingFaceEmbeddings"
     description = "HuggingFace sentence_transformers embedding models."
-    documentation = "https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.huggingface.HuggingFaceEmbeddings.html"
+    documentation = (
+        "https://python.langchain.com/docs/integrations/platforms/huggingface/"
+    )
 
     def build(
         self,
@@ -57,32 +58,30 @@ class HuggingFaceEmbeddingsComponent:
 
 
 class HuggingFaceBgeEmbeddingsComponent:
-    display_name = "HuggingFaceBgeEmbeddings"
     description = "HuggingFaceBgeEmbeddings embedding models."
-    documentation = "https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.huggingface.HuggingFaceBgeEmbeddings.html"
+    documentation = "https://python.langchain.com/docs/integrations/platforms/huggingface/#huggingfacebgeembeddings"
 
     def build(
         self,
         cache_folder: Optional[str] = None,
-        encode_kwargs: Optional[Dict] = {},
-        model_kwargs: Optional[Dict] = {},
+        encode_kwargs: Optional[Dict] = {"normalize_embeddings": True},
+        model_kwargs: Optional[Dict] = {"device": "cpu", "trust_remote_code": True},
         model_name: str = "BAAI/bge-small-en-v1.5",
         **kwargs
-    ) -> HuggingFaceEmbeddings:
-        return HuggingFaceEmbeddings(
+    ) -> HuggingFaceBgeEmbeddings:
+        return HuggingFaceBgeEmbeddings(
             cache_folder=cache_folder,
             encode_kwargs=encode_kwargs,
             model_kwargs=model_kwargs,
             model_name=model_name,
-            multi_process=False,
-            show_progress=True,
         )
 
 
 class GPT4AllEmbeddingsComponent:
-    display_name = "GPT4AllEmbeddings"
     description = "GPT4AllEmbeddings embedding models."
-    documentation = "https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.gpt4all.GPT4AllEmbeddings.html"
+    documentation = (
+        "https://python.langchain.com/docs/integrations/text_embedding/gpt4all/"
+    )
 
     def build(self, model_name: str = "", **kwargs) -> GPT4AllEmbeddings:
         device = "cpu"  # "cuda" if torch.cuda.is_available() else "cpu"
@@ -90,9 +89,10 @@ class GPT4AllEmbeddingsComponent:
 
 
 class OpenAIEmbeddingsComponent:
-    display_name = "OpenAIEmbeddings"
     description = "OpenAIEmbeddings embedding models."
-    documentation = "https://api.python.langchain.com/en/latest/embeddings/langchain_community.embeddings.gpt4all.GPT4AllEmbeddings.html"
+    documentation = (
+        "https://python.langchain.com/docs/integrations/text_embedding/openai/"
+    )
 
     def build(
         self,
