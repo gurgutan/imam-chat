@@ -158,4 +158,4 @@ sudo lsof -t -i tcp:8010 | xargs kill -9
 1. Add providers for auto download models (HF, for example)/
 2. Add context window managment (length, queue).
 3. Create Quran DB scheme.
-4. 
+

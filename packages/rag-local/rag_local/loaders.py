@@ -99,6 +99,26 @@ class JSONLoaderComponent:
 
 
 class QuranJSONLoaderComponent:
+    """
+    Loader for structutred Quran JSON file.
+    Json format:
+    { data": [
+        {
+        "id": 1,  # № абсолютный номер аята
+        "s_n": 1, # № суры
+        "a_n": 1, # № аята в суре
+        "text": "In the name of Allah, most benevolent, ever-merciful.",  # текст аята
+        "tafsir": "Bismillah بِسْمِ اللَّـهِ is a verse of the Holy Qur'an...", # текст тафсира
+        "source": "Quran.com",            # описание источника тафсира
+        "name": "Maarif-ul-Quran",        # название источника тафсира
+        "language": "English",            # язык
+        "author": "Mufti Muhammad Shafi", # автор тафсира
+        "translator": ""                  # переводчик
+        },
+        ...
+    ]}
+    """
+
     display_name = "JsonLoaderComponent"
     description = "Json file Loader"
     documentation = ""

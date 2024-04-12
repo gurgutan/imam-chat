@@ -194,8 +194,7 @@ class ChainBuilder:
         return {"documents": docs, "scores": [float(score) for score in scores]}
 
 
-# TODO: Добавить логирование диалогов
+# TODO: Подготовить клиента для бенчмарка
 # TODO: Добавить контроль длины промпта
-# TODO: Добавить в цепь ConversationBufferMemory
-# TODO: Добавить в ответ данные по источникам (метаданные в коллекцию документов и их извелечение)
+# TODO: Добавить в цепь ConversationBufferMemory?
 # TODO: Поискать модель для арабского языка либо зафайнюнить
