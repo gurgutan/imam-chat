@@ -6,15 +6,17 @@ Module contains adapters classes for text loaders by different providers.
 
 # pylint: disable=no-name-in-module
 import json
-from typing import Dict, Sequence, Union
+import os
+from typing import Dict, Iterator, List, Sequence, Union
 from bs4 import BeautifulSoup as Soup
 from logger import logger
 from langchain_community.document_loaders import WebBaseLoader, TextLoader, JSONLoader
 from langchain_community.document_loaders.recursive_url_loader import RecursiveUrlLoader
+from langchain_core.documents import Document
+
 from rag.component import raise_not_implemented
 
 # from langchain_community.document_loaders.json_loader import JSONLoader
-
 # from langchain_community.document_loaders import json_loader
 
 
@@ -47,7 +49,6 @@ def build_loader(config: Dict):
 
 
 class WebBaseLoaderComponent:
-    display_name = "WebBaseLoaderComponent"
     description = "Web Loader Component"
     documentation = ""
 
@@ -56,7 +57,6 @@ class WebBaseLoaderComponent:
 
 
 class RecursiveUrlLoaderComponent:
-    display_name = "RecursiveUrlLoaderComponent"
     description = "Recursive URL Loader Component"
     documentation = ""
 
@@ -67,7 +67,6 @@ class RecursiveUrlLoaderComponent:
 
 
 class TextLoaderComponent:
-    display_name = "TextLoaderComponent"
     description = "Text file Loader"
     documentation = ""
 
@@ -78,13 +77,12 @@ class TextLoaderComponent:
 
 
 class JSONLoaderComponent:
-    display_name = "JsonLoaderComponent"
     description = "Json file Loader"
     documentation = ""
 
     def build(
         self,
-        uri: Union[str, Sequence[str]] = ".",
+        uri: str = ".",
         jq_schema: str = "",
         content_key: str = "",
         **kwargs,
@@ -119,13 +117,12 @@ class QuranJSONLoaderComponent:
     ]}
     """
 
-    display_name = "JsonLoaderComponent"
     description = "Json file Loader"
     documentation = ""
 
     def build(
         self,
-        uri: Union[str, Sequence[str]] = ".",
+        uri: str = ".",
         **kwargs,
     ) -> JSONLoader:
         jq_schema = ".data[]"
@@ -157,3 +154,44 @@ class QuranJSONLoaderComponent:
             "cite": f"Qu'ran ({surah_n}:{ayah_n})",
         }
         return info
+
+    def load(
+        self,
+        uri: Union[str, Sequence[str]] = ".",
+        **kwargs,
+    ) -> list[Document]:
+        """
+        Loads json files
+        """
+        if os.path.exists(uri):
+            files = [os.path.isfile(filename) for filename in os.listdir(uri)]
+        elif os.path.isfile(uri):
+            files = [os.path.isfile(filename) for filename in [uri]]
+        else:
+            logger.error("File %s does not exist", uri)
+        if not files:
+            logger.error("No files found in %s", uri)
+            return []
+
+        docs = []
+        for file in files:
+            json_loader = self.build(file)
+            docs.extend(json_loader.load())
+            # Move file to 'finished' folder
+            new_filename = os.path.dirname(file) + "/finished/" + os.path.basename(file)
+            logger.info(f"Moving {file} to {new_filename}")
+            os.renames(file, new_filename)
+
+        return docs
+
+
+def move_to_finished_folder(files: list[str]):
+    """Moves files to dir ./finished/ near the file"""
+
+    for file in filter(lambda x: x, files):
+        if not os.path.isfile(file):
+            continue
+        new_filename = os.path.dirname(file) + "/finished/" + os.path.basename(file)
+        logger.info(f"Moving {file} to {new_filename}")
+        os.renames(file, new_filename)
+    return True

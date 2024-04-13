@@ -27,14 +27,12 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from rag.llms import build_model
 from rag.embeddings import build_embedder
-from rag.loaders import build_loader
+from rag.loaders import build_loader, move_to_finished_folder
 from rag.retrievers import build_retriever
 from rag.prompts import MuslimImamPrompt
 from rag.qadb import connect_qa_db, count, insert, select
 
 from psycopg2.extensions import connection as PSConnection
-
-from rag.utils import first, second
 
 
 class Question(BaseModel):
@@ -60,21 +58,25 @@ class ChainBuilder:
         if not self.connection:
             logger.error("Could not connect to QA db. Dialogs logging disabled.")
 
-        # Выбираем загрузчик данных
-        loader = build_loader(config["loader"])
-        logger.info("Using loader %s", loader.__class__.__name__)
-
         # Загружаем данные из источника
         logger.info(f"Loading data with settings: {config['loader']} ...")
-        data = loader.load()
+        try:
+            data = build_loader(config["loader"]).load()
+            move_to_finished_folder([doc.metadata.get("file", None) for doc in data])
+        except:
+            logger.warning("No data to load.")
+            data = None
 
-        # Применяем сплиттер
-        logger.info("Documents splitting...")
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=800, chunk_overlap=100
-        )
-        chunks = text_splitter.split_documents(data)
-        logger.info("Produced %i chunks", len(chunks))
+        if data:
+            # Применяем сплиттер
+            logger.info("Documents splitting...")
+            text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=800, chunk_overlap=100
+            )
+            chunks = text_splitter.split_documents(data)
+            logger.info("Produced %i chunks", len(chunks))
+        else:
+            chunks = []
 
         # Выбираем эмбеддер
         embedder = build_embedder(config["embedder"])
