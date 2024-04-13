@@ -81,11 +81,18 @@ llm:
   # model: TheBloke/Llama-2-7B-Chat-GGUF
   # model_file: llama-2-7b-chat.Q4_0.gguf
 
-  provider: vllmopenai
-  model: Qwen/Qwen2-beta-7B
+  # provider: vllmopenai
+  # model: Qwen/Qwen2-beta-7B
+  # base_url: http://ollama:11434/v1
+  # api_key: not_need
+  # model_file: Qwen2-beta-7B
+
+  provider: ollama
+  model: qwen:latest
   base_url: http://ollama:11434/v1
   api_key: not_need
-  model_file: Qwen2-beta-7B
+  # model_file: qwen
+
 
   # provider: openai
   # model: gpt-3.5-turbo

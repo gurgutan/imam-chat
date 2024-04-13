@@ -20,7 +20,7 @@ services:
     image: ollama/ollama
     volumes:
       - type: bind
-        source: ollama
+        source: /opt/imam/ollama
         target: /root/.ollama
     ports:
       - "11434:11434/tcp"

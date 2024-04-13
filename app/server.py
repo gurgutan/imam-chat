@@ -3,16 +3,18 @@ from fastapi.responses import RedirectResponse
 from langserve import add_routes
 
 from app.config import get_config
-from rag.chain_custom import ChainBuilder
+from rag.chain_rag import ChainBuilder
+from rag.chains import Chains
+
+from logger import logger
+
 
 app = FastAPI()
 
-config = get_config()
 
-
-# rag_chain = build_chain(config)
 chain_builder = ChainBuilder()
-rag_chain = chain_builder.build(config)
+
+chains = Chains({"rag": chain_builder.build(get_config())})
 
 
 @app.get("/")
@@ -20,12 +22,21 @@ async def redirect_root_to_docs():
     return RedirectResponse("/docs")
 
 
+@app.get("/config/reload")
+async def reload_config():
+    logger.info("Reloading configuration")
+    config = get_config()
+    chains["rag"] = chain_builder.build(config)
+    return config
+
+
 # Добавляем путь к API
-add_routes(app, rag_chain, path="/chat")
+add_routes(app, chains["rag"], path="/chat")
+
 
 if __name__ == "__main__":
     import uvicorn
 
-    server_config = config.get("server", {"host": "0.0.0.0", "port": "8010"})
+    server_config = get_config().get("server", {"host": "0.0.0.0", "port": "8010"})
 
     uvicorn.run(app, host=server_config["host"], port=server_config["port"])

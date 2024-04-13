@@ -122,7 +122,7 @@ class ChainBuilder:
             "question": question,
             "prompt_scheme": self.prompt.pretty_repr(),
             "llm_type_emb": self.config["embedder"]["model_name"],
-            "llm_type_ans": self.config["llm"]["model_file"],
+            "llm_type_ans": self.config["llm"]["model"],
             "metric_type": self.config["vectordb"]["metric_type"],
         }
         # Here may be formatting or transformin question
@@ -195,6 +195,8 @@ class ChainBuilder:
         return {"documents": docs, "scores": [float(score) for score in scores]}
 
 
+# TODO: Перезачитывать config.yml
+# TODO: Создать очередь на загрузку документов (папка, из которой после загрузки удаляются файлы)
 # TODO: Подготовить клиента для бенчмарка
 # TODO: Добавить контроль длины промпта
 # TODO: Добавить в цепь ConversationBufferMemory?

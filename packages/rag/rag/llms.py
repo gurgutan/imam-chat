@@ -11,18 +11,15 @@ import os
 import os.path
 
 from typing import Any, Dict, Optional
-from langchain_community.llms import VLLM, CTransformers, LlamaCpp
+from langchain_community.llms import VLLM, VLLMOpenAI, CTransformers, LlamaCpp, Ollama
 from langchain_openai import OpenAI
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain_community.llms import VLLMOpenAI
 from pydantic import SecretStr
 from rag.component import raise_not_implemented
 
 
-DEFAULT_HF_MODEL = "IlyaGusev/saiga_mistral_7b_gguf"
-DEFAULT_HF_MODEL_FILE = "saiga_mistral_7b.Q4_0.gguf"
-DEFAULT_BASE_URL = "http://127.0.0.1:11434"  # ollama local host
+DEFAULT_BASE_URL = "http://ollama:11434"  # ollama local host
 
 
 def build_model(config: Dict):
@@ -40,6 +37,7 @@ def build_model(config: Dict):
         Exception: NotImplementedError if unknown provider
     """
     providers = {
+        "ollama": OllamaComponent().build,
         "llamacpp": LlamaCppComponent().build,
         "ctransformers": CTransformersComponent().build,
         "vllm": VLLMComponent().build,
@@ -48,6 +46,40 @@ def build_model(config: Dict):
     }
     model = providers.get(config["provider"].lower(), raise_not_implemented)(**config)
     return model
+
+
+class OllamaComponent:
+    description = "Ollama API service"
+    documentation = """You should have the ``Ollama`` service running
+    https://python.langchain.com/docs/integrations/llms/ollama/
+    """
+
+    def build(
+        self,
+        model: str = "llama2",
+        base_url: str = DEFAULT_BASE_URL,
+        n_ctx: Optional[int] = None,
+        max_tokens: Optional[int] = None,
+        top_k: Optional[int] = None,
+        top_p: Optional[float] = None,
+        temperature: Optional[float] = None,
+        threads: Optional[int] = None,
+        system: Optional[str] = None,
+        **kwargs,
+    ) -> Any:
+        llm = Ollama(
+            model=model,
+            base_url=base_url,
+            num_ctx=n_ctx,
+            num_predict=max_tokens,
+            top_k=top_k,
+            top_p=top_p,
+            temperature=temperature,
+            num_thread=threads,
+            system=system,
+            keep_alive="12h",
+        )
+        return llm
 
 
 class VLLMComponent:
