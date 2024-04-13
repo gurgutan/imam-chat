@@ -22,6 +22,12 @@ async def redirect_root_to_docs():
     return RedirectResponse("/docs")
 
 
+@app.get("/config")
+async def show_config():
+    config = get_config()
+    return config
+
+
 @app.get("/config/reload")
 async def reload_config():
     logger.info("Reloading configuration")
