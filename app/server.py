@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 from langserve import add_routes
 
 from app.config import get_config
-from rag_local.chain_custom import ChainBuilder
+from rag.chain_custom import ChainBuilder
 
 app = FastAPI()
 

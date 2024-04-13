@@ -17,7 +17,7 @@ from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain_community.llms import VLLMOpenAI
 from pydantic import SecretStr
-from rag_local.component import raise_not_implemented
+from rag.component import raise_not_implemented
 
 
 DEFAULT_HF_MODEL = "IlyaGusev/saiga_mistral_7b_gguf"

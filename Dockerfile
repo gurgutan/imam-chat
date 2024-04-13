@@ -11,17 +11,17 @@ WORKDIR /code
 
 COPY ./pyproject.toml ./README.md ./poetry.lock* ./
 
-
 COPY ./package[s] ./packages
 
 COPY ./app ./app
 
-# Documents data
-COPY ./sources ./sources
-
+RUN poetry config installer.max-workers 10
 # To build  llama-cpp-python for cuBLAS uncomment next line
 # RUN export CMAKE_ARGS="-DLLAMA_CUBLAS=on"
 RUN poetry install --no-interaction --no-ansi
+
+# Documents data
+COPY ./sources ./sources
 
 # For local llm use in llamacpp, llm need to be loaded to local folder:
 # /Path/To/Model/ModelFile.gguf
@@ -29,7 +29,6 @@ RUN poetry install --no-interaction --no-ansi
 # /imam-chat/models/saiga-mistral-7b/saiga-mistral-q4_K.gguf
 # Copy models to image folder
 # COPY ./models ./models
-
 
 EXPOSE 8010
 

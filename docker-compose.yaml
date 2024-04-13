@@ -1,4 +1,5 @@
 services:
+  # Service for QA logging to DB
   db:
     image: postgres
     restart: always
@@ -8,14 +9,59 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - type: bind
-        source: ./data
+        source: /opt/imam/data
         target: /var/lib/postgresql/data
     ports:
       - "5432:5432/tcp"
 
+  # Service ollama for LLM hosting [https://hub.docker.com/r/ollama/ollama]
+  # docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama  
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - type: bind
+        source: ollama
+        target: /root/.ollama
+    ports:
+      - "11434:11434/tcp"
+
+  # Service vllm for LLM hosting
+  # vllm:
+  #   image: vllm-server:cuda
+  #   entrypoint:
+  #     - python3
+  #     - -m
+  #     - vllm.entrypoints.openai.api_server
+  #     - --model
+  #     - Qwen/Qwen2-beta-7B
+  #     - --max-model-len
+  #     - "8192"
+  #     - --gpu-memory-utilization
+  #     - "0.9"
+  #   volumes:
+  #     - type: bind
+  #       source: ~/.cache/huggingface
+  #       target: /root/.cache/huggingface
+  #   ipc: host
+  #   environment:
+  #     HUGGING_FACE_HUB_TOKEN: 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
+  #     # Модель можно задать через переменную окружения MODEL_NAME
+  #     # MODEL_NAME:huggyllama/llama-13b 
+  #   ports:
+  #     - "8000:8000/tcp"
+
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [ gpu ]
+
   imam:
-    depends_on: 
+    depends_on:
       - db
+      - ollama
     image: imam-chat:latest
     environment:
       DB_USER: postgres
@@ -23,17 +69,17 @@ services:
       DB_PORT: 5432
       DB_HOST: db
       DB_NAME: imam
-      DB_TABLE_NAME: query_response    
+      DB_TABLE_NAME: query_response
     restart: always
     volumes:
       - type: bind
-        source: ~/dev/imam-chat/store
+        source: /opt/imam/store
         target: /code/store
       - type: bind
-        source: ~/dev/imam-chat/models
+        source: /opt/imam/models
         target: /code/models
       - type: bind
-        source: ~/dev/imam-chat/sources
+        source: /opt/imam/sources
         target: /code/sources
     # build: /imam-chat/
     command: uvicorn app.server:app --host 0.0.0.0 --port 8010

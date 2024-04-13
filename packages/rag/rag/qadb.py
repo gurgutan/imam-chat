@@ -48,8 +48,7 @@ def connect_qa_db() -> PSConnection:
         )
     except PostgresError as error:
         logger.error("Unable to connect database: %s", error)
-        raise PostgresError(error)
-
+        return None
     return connection
 
 

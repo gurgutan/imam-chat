@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "rag-local"
+name = "rag"
 version = "0.1.0"
 description = "RAG using local LLM, embeddings, vectorstore"
 authors = [
@@ -21,7 +21,7 @@ llama-cpp-python = "^0.2.56"
 langchain-cli = ">=0.0.21"
 
 [tool.langserve]
-export_module = "rag_local"
+export_module = "rag"
 export_attr = "chain"
 
 [build-system]

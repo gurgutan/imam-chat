@@ -25,16 +25,16 @@ from langchain_core.language_models.llms import BaseLLM
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from rag_local.llms import build_model
-from rag_local.embeddings import build_embedder
-from rag_local.loaders import build_loader
-from rag_local.retrievers import build_retriever
-from rag_local.prompts import MuslimImamPrompt
-from rag_local.qadb import connect_qa_db, count, insert, select
+from rag.llms import build_model
+from rag.embeddings import build_embedder
+from rag.loaders import build_loader
+from rag.retrievers import build_retriever
+from rag.prompts import MuslimImamPrompt
+from rag.qadb import connect_qa_db, count, insert, select
 
 from psycopg2.extensions import connection as PSConnection
 
-from rag_local.utils import first, second
+from rag.utils import first, second
 
 
 class Question(BaseModel):
@@ -58,8 +58,7 @@ class ChainBuilder:
         self.config = config
         self.connection = connect_qa_db()
         if not self.connection:
-            logger.error("Could not connect to QA DB")
-            raise IOError("Could not connect to QA DB")
+            logger.error("Could not connect to QA db. Dialogs logging disabled.")
 
         # Выбираем загрузчик данных
         loader = build_loader(config["loader"])
@@ -181,6 +180,8 @@ class ChainBuilder:
 
     def _finilize_chain(self, x):
         logger.info(self.record)
+        if not self.connection:
+            return x
         if not insert(self.connection, self.record):
             logger.error("Failed to insert record to db")
         count_all_raws = count(self.connection)

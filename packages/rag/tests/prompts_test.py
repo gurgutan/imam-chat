@@ -5,7 +5,7 @@ from langchain_core.prompt_values import (
     StringPromptValue,
 )
 
-from rag_local.prompts import (
+from rag.prompts import (
     MuslimImamPrompt,
     QuestionAnswerPrompt,
     QuestionAnswerCoTPrompt,

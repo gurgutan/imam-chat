@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup as Soup
 from logger import logger
 from langchain_community.document_loaders import WebBaseLoader, TextLoader, JSONLoader
 from langchain_community.document_loaders.recursive_url_loader import RecursiveUrlLoader
-from rag_local.component import raise_not_implemented
+from rag.component import raise_not_implemented
 
 # from langchain_community.document_loaders.json_loader import JSONLoader
 

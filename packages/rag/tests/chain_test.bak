@@ -12,13 +12,13 @@ from langchain_community.llms import VLLM, CTransformers, LlamaCpp
 from langchain_community.embeddings import GPT4AllEmbeddings, HuggingFaceEmbeddings
 
 from langchain_openai import OpenAI
-from rag_local.chain import (
+from rag.chain import (
     build_embedder,
     build_loader,
     build_model,
     build_retriever,
 )
-from rag_local.embeddings import GPT4AllEmbeddingsComponent
+from rag.embeddings import GPT4AllEmbeddingsComponent
 
 
 def test_build_loader():

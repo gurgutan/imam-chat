@@ -27,7 +27,7 @@ from chromadb.config import Settings
 
 from logger import logger
 from pydantic import BaseModel
-from rag_local.component import raise_not_implemented
+from rag.component import raise_not_implemented
 
 # Путь по умолчанию к векторной БД
 DEFAULT_STORE_PATH = "./store"

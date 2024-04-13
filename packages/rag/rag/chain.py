@@ -16,12 +16,12 @@ from langchain_core.runnables import chain
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from rag_local.llms import build_model
-from rag_local.embeddings import build_embedder
-from rag_local.loaders import build_loader
-from rag_local.retrievers import build_retriever
-from rag_local.prompts import MuslimImamPrompt
-from rag_local.qadb import connect_qa_db, insert, select
+from rag.llms import build_model
+from rag.embeddings import build_embedder
+from rag.loaders import build_loader
+from rag.retrievers import build_retriever
+from rag.prompts import MuslimImamPrompt
+from rag.qadb import connect_qa_db, insert, select
 
 
 # Add typing for input

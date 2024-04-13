@@ -11,7 +11,7 @@ def _get_config(path: Union[Path, str]) -> Dict[str, Any]:
     path = Path(path)
     if path.is_dir():
         path = path / DEFAULT_CONFIG_FILENAME
-    with open(path) as f:
+    with open(path, "r", encoding="utf-8") as f:
         logger.info(f"Использую файл конфигурации {path}")
         return yaml.safe_load(f)
 

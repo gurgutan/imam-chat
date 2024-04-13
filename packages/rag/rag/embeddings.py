@@ -9,7 +9,7 @@ from langchain_community.embeddings.huggingface import (
 from langchain_community.embeddings import GPT4AllEmbeddings
 from langchain_openai import OpenAIEmbeddings
 from pydantic import SecretStr
-from rag_local.component import raise_not_implemented
+from rag.component import raise_not_implemented
 import torch
 
 

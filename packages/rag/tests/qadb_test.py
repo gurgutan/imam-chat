@@ -1,6 +1,6 @@
 import psycopg2
 import pytest
-from rag_local.qadb import connect_qa_db
+from rag.qadb import connect_qa_db
 
 
 @pytest.fixture

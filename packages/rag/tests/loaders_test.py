@@ -3,7 +3,7 @@
 import json
 import os
 from pathlib import Path
-from rag_local.loaders import (
+from rag.loaders import (
     JSONLoaderComponent,
     QuranJSONLoaderComponent,
     RecursiveUrlLoaderComponent,

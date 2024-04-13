@@ -2,7 +2,7 @@
 Module contains tests for QuranTextSplitter class
 """
 
-from rag_local.splitters import QuranTextSplitter
+from rag.splitters import QuranTextSplitter
 
 
 def test_quran_text_splitter():
