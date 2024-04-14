@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
 
 from app.config import get_config
@@ -11,9 +12,18 @@ from logger import logger
 
 app = FastAPI()
 
+# Set all CORS enabled origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
+
 
 chain_builder = ChainBuilder()
-
 chains = Chains({"rag": chain_builder.build(get_config())})
 
 
@@ -28,12 +38,12 @@ async def show_config():
     return config
 
 
-@app.get("/config/reload")
-async def reload_config():
-    logger.info("Reloading configuration")
-    config = get_config()
-    chains["rag"] = chain_builder.build(config)
-    return config
+# @app.get("/config/reload")
+# async def reload_config():
+#     logger.info("Reloading configuration")
+#     config = get_config()
+#     chains["rag"] = chain_builder.build(config)
+#     return config
 
 
 # Добавляем путь к API

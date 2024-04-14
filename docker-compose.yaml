@@ -15,48 +15,58 @@ services:
       - "5432:5432/tcp"
 
   # Service ollama for LLM hosting [https://hub.docker.com/r/ollama/ollama]
-  # docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama  
+  # docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama 
+  # To add model use 'ollama pull model_name'. For example
+  # ollama pull mistral 
   ollama:
     image: ollama/ollama
+    restart: always
+    ipc: host
     volumes:
       - type: bind
         source: /opt/imam/ollama
         target: /root/.ollama
     ports:
       - "11434:11434/tcp"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    # Service vllm for LLM hosting
+    # vllm:
+    #   image: vllm-server:cuda
+    #   entrypoint:
+    #     - python3
+    #     - -m
+    #     - vllm.entrypoints.openai.api_server
+    #     - --model
+    #     - Qwen/Qwen2-beta-7B
+    #     - --max-model-len
+    #     - "8192"
+    #     - --gpu-memory-utilization
+    #     - "0.9"
+    #   volumes:
+    #     - type: bind
+    #       source: ~/.cache/huggingface
+    #       target: /root/.cache/huggingface
+    #   ipc: host
+    #   environment:
+    #     HUGGING_FACE_HUB_TOKEN: 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
+    #     # Модель можно задать через переменную окружения MODEL_NAME
+    #     # MODEL_NAME:huggyllama/llama-13b 
+    #   ports:
+    #     - "8000:8000/tcp"
 
-  # Service vllm for LLM hosting
-  # vllm:
-  #   image: vllm-server:cuda
-  #   entrypoint:
-  #     - python3
-  #     - -m
-  #     - vllm.entrypoints.openai.api_server
-  #     - --model
-  #     - Qwen/Qwen2-beta-7B
-  #     - --max-model-len
-  #     - "8192"
-  #     - --gpu-memory-utilization
-  #     - "0.9"
-  #   volumes:
-  #     - type: bind
-  #       source: ~/.cache/huggingface
-  #       target: /root/.cache/huggingface
-  #   ipc: host
-  #   environment:
-  #     HUGGING_FACE_HUB_TOKEN: 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
-  #     # Модель можно задать через переменную окружения MODEL_NAME
-  #     # MODEL_NAME:huggyllama/llama-13b 
-  #   ports:
-  #     - "8000:8000/tcp"
-
-  #   deploy:
-  #     resources:
-  #       reservations:
-  #         devices:
-  #           - driver: nvidia
-  #             count: 1
-  #             capabilities: [ gpu ]
+    #   deploy:
+    #     resources:
+    #       reservations:
+    #         devices:
+    #           - driver: nvidia
+    #             count: 1
+    #             capabilities: [ gpu ]
 
   imam:
     depends_on:
@@ -85,3 +95,19 @@ services:
     command: uvicorn app.server:app --host 0.0.0.0 --port 8010
     ports:
       - "8010:8010/tcp"
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    restart: always
+    environment:
+      - OLLAMA_BASE_URL=ollama
+    volumes:
+      - type: bind
+        source: /opt/imam/open-webui
+        target: /app/backend/data
+    network_mode: "host"
+    # build:
+    #   context: .
+    #   network: host
+
+    # docker run -d --network=host -v open-webui:/app/backend/data -e OLLAMA_BASE_URL=http://127.0.0.1:11434 --name open-webui --restart always ghcr.io/open-webui/open-webui:main

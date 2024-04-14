@@ -1,13 +1,13 @@
 FROM python:3.11-slim
 
+WORKDIR /code
+
 # Install tools for building llama-cpp-python
 # Comment next line if using other llm provider
 RUN apt-get update && apt-get install build-essential -y
 RUN pip install poetry==1.6.1
 
 RUN poetry config virtualenvs.create false
-
-WORKDIR /code
 
 COPY ./pyproject.toml ./README.md ./poetry.lock* ./
 

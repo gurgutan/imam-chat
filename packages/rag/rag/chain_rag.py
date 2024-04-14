@@ -197,8 +197,6 @@ class ChainBuilder:
         return {"documents": docs, "scores": [float(score) for score in scores]}
 
 
-# TODO: Перезачитывать config.yml
-# TODO: Создать очередь на загрузку документов (папка, из которой после загрузки удаляются файлы)
 # TODO: Подготовить клиента для бенчмарка
 # TODO: Добавить контроль длины промпта
 # TODO: Добавить в цепь ConversationBufferMemory?

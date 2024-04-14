@@ -88,9 +88,9 @@ llm:
   # model_file: Qwen2-beta-7B
 
   provider: ollama
-  model: qwen:latest
-  base_url: http://ollama:11434/v1
-  api_key: not_need
+  model: mistral
+  base_url: http://ollama:11434
+  # api_key: not_need
   # model_file: qwen
 
 
@@ -104,7 +104,7 @@ llm:
   top_k: 1
   top_p: 0.95
   n_ctx: 4096
-  model_type: llama
+  model_type: mistral
   frequency_penalty: 1.0
   repeat_penalty: 1.1
   threads: 32 # number of CPU threads to use
