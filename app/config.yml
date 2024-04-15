@@ -97,7 +97,7 @@ llm:
   provider: openai
   model: gpt-3.5-turbo
   base_url: https://api.proxyapi.ru/openai/v1 # https://api.openai.com/v1
-  api_key: sk-kwrRdqybjppKSpSp60ZBbztAAdqtgpRC
+  api_key: sk-
 
   temperature: 0.1
   max_tokens: 1024 # maximum number of tokens in generated text
