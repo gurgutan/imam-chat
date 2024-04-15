@@ -44,7 +44,7 @@ vectordb:
   provider: faiss
   metric_type: cosine # l2, ip, jaccard
   search_kwargs:
-    k: 4
+    k: 2
   anonymized_telemetry: false
   # search_type: similarity_score_threshold 
   # score_threshold: 0.1
@@ -87,21 +87,21 @@ llm:
   # api_key: not_need
   # model_file: Qwen2-beta-7B
 
-  provider: ollama
-  model: mistral
-  base_url: http://ollama:11434
+  # provider: ollama
+  # model: mistral
+  # base_url: http://ollama:11434
   # api_key: not_need
-  # model_file: qwen
+  # model_file: mistral
 
 
-  # provider: openai
-  # model: gpt-3.5-turbo
-  # base_url: https://api.openai.com/v1
-  # api_key: sk-some_key
+  provider: openai
+  model: gpt-3.5-turbo
+  base_url: https://api.proxyapi.ru/openai/v1 # https://api.openai.com/v1
+  api_key: sk-kwrRdqybjppKSpSp60ZBbztAAdqtgpRC
 
   temperature: 0.1
   max_tokens: 1024 # maximum number of tokens in generated text
-  top_k: 1
+  top_k: 512
   top_p: 0.95
   n_ctx: 4096
   model_type: mistral

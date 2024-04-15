@@ -28,13 +28,13 @@ services:
         target: /root/.ollama
     ports:
       - "11434:11434/tcp"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [ gpu ]
     # Service vllm for LLM hosting
     # vllm:
     #   image: vllm-server:cuda

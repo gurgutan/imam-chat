@@ -8,7 +8,18 @@ API endpoints:
   - **http://host:8010/chat**  - main dialog endpoint
   - **http://host:8010/chat/playground** - playground for chat-bot
 
-Alsow using conversations logging to database. Credentials
+Alsow using conversations logging to database. Credentials to logging db in .env file in project root folder (see 'DB connection settings').
+
+## Quick start
+To start on your machine in docker containers:
+```bash
+docker build . -t imam-chat
+docker compose up
+```
+Then you can open http://localhost:8010/chat/playground or http://localhost:8010/docs for API docs.
+
+
+
 ## Installation
 Install poetry if you haven't yet (see https://python-poetry.org/docs/#installing-with-the-official-installer)
 
@@ -36,10 +47,18 @@ Example of path to file: /imam-chat/models/saiga-mistral-7b/saiga-mistral-q4_K.g
 You can choose model that will be use in config.yml/llm section
 
 ## Settings
+#### App settings
 All editable settings in app/config.yml. See comments in config.yml.
+
+#### DB connection settings
 Add .env file in root folder with credentails to connect db:
-POSTGRES_USER = <db_username>
-POSTGRES_PASSWORD = <db_password>
+Dialogs db connection parameters
+DB_USER = dbuser
+DB_PASSWORD = dbpassword
+DB_PORT = 5432
+DB_HOST = localhost
+DB_NAME = imam
+DB_TABLE_NAME = query_response
 
 ## Launch LangServe
 

@@ -12,11 +12,21 @@ class MuslimImamPrompt:
     description = "Prompt for answer query with context as muslim imam"
     documentation = ""
     template = """Act as a Muslim imam who gives me guidance and advice on how to deal with life problems. Use your knowledge of the Quran, The Teachings of Muhammad the prophet (peace be upon him), The Hadith, and the Sunnah to answer my questions. Include these source quotes/arguments in the Arabic and English Languages at the end of answer.
- The answer should be concise and informative. Answer the question based only on the following context:
-=================
+The answer should be concise and informative.
+Use the following response template:
+------
+{{Answer}}
+
+References:
+
+{{References}}
+------
+
+
+Answer the question based only on the following context:
+
 {context}
 
-=================
 Question: {question}
 
 Answer: """

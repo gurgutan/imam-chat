@@ -12,7 +12,10 @@ import os.path
 
 from typing import Any, Dict, Optional
 from langchain_community.llms import VLLM, VLLMOpenAI, CTransformers, LlamaCpp, Ollama
-from langchain_openai import OpenAI
+from langchain_community.chat_models import ChatOpenAI
+
+# from langchain_openai import OpenAI
+
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from pydantic import SecretStr
@@ -200,7 +203,7 @@ class OpenAIComponent:
         **kwargs,
     ) -> Any:
         callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-        llm = OpenAI(
+        llm = ChatOpenAI(
             model=model,
             base_url=base_url,
             api_key=api_key,
